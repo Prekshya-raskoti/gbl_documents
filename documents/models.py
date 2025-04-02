@@ -1,3 +1,18 @@
 from django.db import models
+from user.models import Vendor
 
-# Create your models here.
+class Document(models.Model):
+    DOCUMENT_TYPES = [
+        ('citizenship', 'Citizenship'),
+        ('bank_details', 'Bank Details'),
+        ('pan_card', 'PAN Card'),
+        ('other', 'Other'),
+    ]
+
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='documents')
+    document_type = models.CharField(max_length=50, choices=DOCUMENT_TYPES)
+    file = models.FileField(upload_to='vendor_documents/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.vendor.name} - {self.get_document_type_display()}"
