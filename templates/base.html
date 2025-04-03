@@ -22,52 +22,16 @@
             <h4 class="text-center">GBL Documents</h4>
             <hr>
             
-            {% if user.is_authenticated and user.is_staff %}
                 <ul class="nav flex-column">
+                
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'dashboard' %}">
-                            <i class="fa fa-chart-bar"></i> Dashboard
+                        <a class="nav-link text-white" href="{% url 'user_vendor_list' %}">
+                            <i class="fa fa-building"></i> Vendor Profile
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'vendor_list' %}">
-                            <i class="fa fa-building"></i> Vendors
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'document_list' %}">
-                            <i class="fa fa-file"></i> Documents
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'contract_list' %}">
-                            <i class="fa fa-file-contract"></i> Contracts
-                        </a>
-                    </li>
+                    
                 </ul>
                 <hr>
-            {% endif %}
-
-            <ul class="nav flex-column">
-                {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'profile' %}">
-                            <i class="fa fa-user"></i> Profile
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'logout' %}">
-                            <i class="fa fa-sign-out-alt"></i> Logout
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'login' %}">
-                            <i class="fa fa-sign-in-alt"></i> Login
-                        </a>
-                    </li>
-                {% endif %}
-            </ul>
         </nav>
 
         <!-- Main Content -->
