@@ -1,5 +1,5 @@
 from django.db import models
-from user.models import Vendor
+from  apps.user.models import Vendor
 
 class Document(models.Model):
     DOCUMENT_TYPES = [

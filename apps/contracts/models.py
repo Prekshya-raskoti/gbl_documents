@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
-from user.models import Vendor
+from apps.user.models import Vendor
 class Contract(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='contracts')
     join_date = models.DateField()
