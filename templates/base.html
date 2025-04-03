@@ -48,7 +48,7 @@
                 <hr>
             {% endif %}
 
-            <ul class="nav flex-column">
+            {% comment %} <ul class="nav flex-column">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'profile' %}">
@@ -67,7 +67,7 @@
                         </a>
                     </li>
                 {% endif %}
-            </ul>
+            </ul> {% endcomment %}
         </nav>
 
         <!-- Main Content -->
