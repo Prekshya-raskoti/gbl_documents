@@ -1,8 +1,9 @@
 from django.contrib import messages
-from django.views.generic import ListView ,CreateView
+from django.views.generic import ListView ,CreateView , DeleteView
 from .models import Vendor
 from django.urls import reverse_lazy
 from .forms import VendorForm
+from django.http import JsonResponse
 
 class VendorListView(ListView):
     model = Vendor
@@ -24,3 +25,12 @@ class VendorCreateView(CreateView):
         messages.error(self.request, "There was an error with the form submission.")
         return super().form_invalid(form)    
    
+class VendorDeleteView(DeleteView):
+    model = Vendor
+    success_url = reverse_lazy('user:user_vendor_list')  
+
+    def delete(self, request, *args, **kwargs):
+        vendor = self.get_object()
+        vendor.delete()
+        messages.success(request, "Vendor has been successfully deleted!")
+        return JsonResponse({'success': True}) 

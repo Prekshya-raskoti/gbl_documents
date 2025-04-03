@@ -19,15 +19,26 @@
 <body>
     <div class="d-flex">
         <!-- Sidebar -->
-        <nav class="bg-dark text-white p-3 vh-100" style="width: 250px; position: fixed;">
-            <h4 class="text-center">GBL Documents</h4>
+        <nav class="text-white p-3 vh-100" style="width: 250px; position: fixed; background-color:rgb(39, 36, 37)">
+            <!-- Navigation content -->
+        
+                    <h4 class="text-center">GBL Documents</h4>
             <hr>
             
                 <ul class="nav flex-column">
-                
                     <li class="nav-item">
                         <a class="nav-link text-white" href="{% url 'user:user_vendor_list' %}">
-                            <i class="fa fa-building"></i> Vendor Profile
+                            <i class="fa fa-building me-2"></i> Vendor Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'user:user_vendor_list' %}">
+                            <i class="fa fa-upload me-2"></i> Upload Documents
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'user:user_vendor_list' %}">
+                            <i class="fa fa-folder me-2"></i> View Contracts
                         </a>
                     </li>
                     
@@ -37,6 +48,14 @@
 
         <!-- Main Content -->
         <div class="flex-grow-1 p-4" style="margin-left: 260px;">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
             {% block content %}{% endblock %}
         </div>
     </div>

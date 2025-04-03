@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'  
+
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 
