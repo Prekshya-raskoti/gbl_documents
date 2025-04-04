@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<a class="btn btn-primary" href="{% url 'documents:document_create' %}">Upload New Document</a>
+<h2>Vendor Documents</h2>
+
+<hr>
+
+<div class="mb-3">
+    <a href="{% url 'documents:document_create' %}" class="btn btn-primary">
+        Add Documents
+    </a>
 <table class="table">
     <thead>
         <tr>
