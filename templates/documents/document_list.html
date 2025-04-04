@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a class="btn btn-primary" href="{% url 'documents:document_create' %}">Upload New Document</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Vendor</th>
+            <th>Document Type</th>
+            <th>Uploaded At</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for document in documents %}
+        <tr>
+            <td>{{ document.vendor.name }}</td>
+            <td>{{ document.get_document_type_display }}</td>
+            <td>{{ document.uploaded_at }}</td>
+            <td>
+                <a href="{{ document.file.url }}" target="_blank" class="btn btn-info">View</a>
+                <form method="POST" action="{% url 'documents:document_delete' document.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}

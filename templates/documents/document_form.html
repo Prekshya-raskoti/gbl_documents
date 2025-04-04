@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<a class="btn btn-success-outline" href="{% url 'documents:document_list' %}">
+    <i class="fa fa-angle-left"></i> Back
+</a>
+<div class="card card-default p-10">
+    <div class="card-body">
+        <div class="body-block">
+            <section class="section">
+                <div class="row sameheight-container">
+                    <div class="col-md-6">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <button type="submit" class="btn btn-primary">Upload Document</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock content %}
