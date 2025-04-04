@@ -18,6 +18,13 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# Directory where uploaded files are stored
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# URL to access the uploaded files
+MEDIA_URL = '/media/'
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
