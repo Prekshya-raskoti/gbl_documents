@@ -3,7 +3,6 @@ from django.views.generic import ListView ,CreateView , DeleteView ,UpdateView
 from .models import Vendor
 from django.urls import reverse_lazy
 from .forms import VendorForm
-from django.http import JsonResponse
 
 class VendorListView(ListView):
     model = Vendor
@@ -31,12 +30,14 @@ class VendorUpdateView(UpdateView):
     template_name = 'user/edit_vendor.html'  
     success_url = reverse_lazy('user:user_vendor_list')       
    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Vendor details updated successfully!")
+        return response
 class VendorDeleteView(DeleteView):
     model = Vendor
-    success_url = reverse_lazy('user:user_vendor_list')  
+    success_url = reverse_lazy('user:user_vendor_list')
 
-    def delete(self, request, *args, **kwargs):
-        vendor = self.get_object()
-        vendor.delete()
-        messages.success(request, "Vendor has been successfully deleted!")
-        return JsonResponse({'success': True}) 
+    def post(self, request, *args, **kwargs):
+        messages.success(self.request, "Vendor has been successfully deleted!")
+        return super().post(request, *args, **kwargs)
