@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.views.generic import ListView ,CreateView , DeleteView
+from django.views.generic import ListView ,CreateView , DeleteView ,UpdateView
 from .models import Vendor
 from django.urls import reverse_lazy
 from .forms import VendorForm
@@ -23,7 +23,13 @@ class VendorCreateView(CreateView):
 
     def form_invalid(self, form):
         messages.error(self.request, "There was an error with the form submission.")
-        return super().form_invalid(form)    
+        return super().form_invalid(form)   
+
+class VendorUpdateView(UpdateView):
+    model = Vendor
+    fields = ['name', 'email', 'address', 'phone']
+    template_name = 'user/edit_vendor.html'  
+    success_url = reverse_lazy('user:user_vendor_list')       
    
 class VendorDeleteView(DeleteView):
     model = Vendor

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<a class="btn btn-success-outline" href="{% url 'user:user_vendor_list' %}">
+    <i class="fa fa-angle-left"></i> Back
+</a>
+
+<div class="card card-default p-10">
+    <div class="card-body">
+        <div class="body-block">
+            <section class="section">
+                <div class="row sameheight-container">
+                    <div class="col-md-6">
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form|crispy }}  
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <a href="{% url 'user:user_vendor_list' %}" class="btn btn-secondary">Cancel</a>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="np_widget_wiz1" widget="month-sm"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
