@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load tz %}
 
 {% block content %}
 <h2>Vendor List</h2>
@@ -10,7 +11,6 @@
          Add Vendor 
     </a>
 </div>
-
 <table class="table">
     <thead>
         <tr>
@@ -32,12 +32,12 @@
                 <td>{{ vendor.email }}</td>
                 <td>{{ vendor.address }}</td>
                 <td>{{ vendor.phone }}</td>
-                <td>{{ vendor.created_at }}</td> 
-                <td>{{ vendor.updated_at }}</td> 
+                <td>{{ vendor.created_at|localtime }}</td> 
+                <td>{{ vendor.updated_at|localtime }}</td> 
                 <td>
-                    <button class="btn btn-warning btn-sm">
+                    <a href="{% url 'user:edit_vendor' vendor.id %}" class="btn btn-warning btn-sm">
                         <i class="fa fa-edit"></i>
-                    </button>
+                    </a>
                 
                     <form action="{% url 'user:delete_vendor' vendor.id %}" method="POST" style="display:inline;">
                         {% csrf_token %}
@@ -46,6 +46,7 @@
                         </button>
                     </form>
                 </td>
+                
                 
                 
             </tr>
