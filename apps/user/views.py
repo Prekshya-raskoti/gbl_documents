@@ -4,6 +4,17 @@ from .models import Vendor
 from django.urls import reverse_lazy
 from .forms import VendorForm
 
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render
+
+def is_superuser(user):
+    return user.is_superuser
+
+@login_required
+@user_passes_test(is_superuser)
+def home_view(request):
+    return render(request, 'home.html')
+
 class VendorListView(ListView):
     model = Vendor
     template_name = 'user/user_vendor_list.html'

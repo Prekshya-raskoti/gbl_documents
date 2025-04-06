@@ -1,0 +1,67 @@
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="auth">
+    <div class="auth-container">
+        <div class="card">
+            <header class="auth-header">
+                <h1 class="auth-title">
+                    <br>
+                    <span class="span-red">GBL</span> <span class="span-blue">Documents</span>
+                </h1>
+            </header>
+            <div class="auth-content">
+                <p class="text-center">LOGIN TO CONTINUE</p>
+                {% comment %} <form method="POST" action="{% url 'user:login' %}"> {% endcomment %}
+                <form method="POST" >
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="control-label">Username</label>
+                        <input type="text" name="username" class="form-control underlined">
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Password</label>
+                        <input type="password" id="id_password" name="password" class="form-control underlined">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input class="checkbox rounded" type="checkbox" onclick="showPass()">
+                            <span>Show Password</span>
+                        </label>
+                    </div>
+
+                    <input type="submit" class="btn btn-block btn-primary" value="Login">
+                    <br>
+                    {% comment %} <a href="{% url 'user:password_reset_view' %}">Forgot Password</a> {% endcomment %}
+                    Forgot Password
+                </form>
+            </div>
+            <div class="formFooter">
+                <a type="button" class="btn btn-social-icon btn-facebook btn-rounded" href="https://ne-np.facebook.com/people/Gaau-Besi-Logistics-Pvt-ltd/100066894044397/" target="_blank"><i class="fa fa-facebook"></i></a>
+                <p>©Gaau Besi Logistics - {% now "Y" %}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+{% block scripts %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/vendor.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/app-custom.css' %}">
+    <script src="{% static 'js/vendor.js' %}"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+    <script>
+        function showPass() {
+            var x = document.getElementById("id_password");
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+        }
+    </script>
+{% endblock scripts %}
+
