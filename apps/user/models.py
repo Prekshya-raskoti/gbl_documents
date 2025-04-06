@@ -1,6 +1,7 @@
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
+import re
 class User(AbstractUser):
     ADMIN = 'admin'
 
@@ -24,3 +25,11 @@ class Vendor(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def clean(self):
+        super().clean()
+        pattern = r'^\d{10}$'
+        if not re.match(pattern, self.phone):
+            raise ValidationError({
+                'phone': "Phone number must  exactly 10 digits."
+            })
