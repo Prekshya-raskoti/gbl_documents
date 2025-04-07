@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load tz %}
+
 
 {% block content %}
 <h2>Vendor Documents</h2>
@@ -17,7 +19,7 @@
             <th>Vendor</th>
             <th>Document Type</th>
             <th>Uploaded At</th>
-            <th>Actions</th>
+            <th>Updated At</th>
         </tr>
     </thead>
     <tbody>
@@ -25,7 +27,9 @@
         <tr>
             <td>{{ document.vendor.name }}</td>
             <td>{{ document.get_document_type_display }}</td>
-            <td>{{ document.uploaded_at }}</td>
+            <td>{{ document.uploaded_at|localtime }}</td>
+            <td>{{ document.updated_at|localtime }}</td> 
+
             <td>
                 <a href="{% url 'documents:document_detail' document.pk %}" class="btn btn-secondary">
                     <i class="fa fa-eye"></i>
