@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import VendorListView, VendorCreateView , VendorDeleteView , VendorUpdateView
+from .views import VendorListView, VendorCreateView , VendorDeleteView , VendorUpdateView 
 app_name = "user"
 
 urlpatterns = [

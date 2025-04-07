@@ -1,19 +1,39 @@
 from django.contrib import messages
+from django.shortcuts import redirect
 from django.views.generic import ListView ,CreateView , DeleteView ,UpdateView
 from .models import Vendor
-from django.urls import reverse_lazy
-from .forms import VendorForm
-
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.urls import reverse_lazy, reverse
+from django.shortcuts import redirect
+from django.contrib.auth import login
+from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render
+from .forms import VendorForm
+from django.contrib.auth import logout
 
-def is_superuser(user):
-    return user.is_superuser
 
-@login_required
-@user_passes_test(is_superuser)
-def home_view(request):
-    return render(request, 'home.html')
+def custom_login_view(request):
+    if request.user.is_authenticated:
+        return redirect(reverse('user:user_vendor_list'))
+
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect(reverse('user:user_vendor_list'))
+        else:
+            form = AuthenticationForm()
+
+        return render(request, 'registration/login.html', {'form': form})
+    form = AuthenticationForm(request, data=request.POST)
+    return render(request, 'registration/login.html', {'form': form})
+    
+def logout_view(request):
+    logout(request)  
+    return redirect(reverse('user:logged_out')) 
+
+def logged_out_view(request):
+    return render(request, 'registration/logged_out.html')  
 
 class VendorListView(ListView):
     model = Vendor
