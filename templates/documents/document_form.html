@@ -85,27 +85,6 @@
 
         container.appendChild(newFields);
     }
-
-    // Handle citizenship selection dynamically
-    document.addEventListener('change', function (e) {
-        if (e.target.matches('select')) {
-            const wrapper = e.target.closest('.document-fields');
-            const fileWrapper = wrapper.querySelector('.file-wrapper');
-            
-            if (e.target.value.toLowerCase() === 'citizenship') {
-                fileWrapper.innerHTML = '';
-                fileWrapper.appendChild(createFileInput('file', 'Upload Front Side'));
-                fileWrapper.appendChild(createFileInput('file', 'Upload Back Side'));
-            
-            }
-        }
-    });
-
-    // Pre-trigger change event on load (for edit scenarios)
-    window.addEventListener('load', function () {
-        document.querySelectorAll('select').forEach(select => {
-            select.dispatchEvent(new Event('change'));
-        });
-    });
 </script>
+
 {% endblock content %}
