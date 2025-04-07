@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Document Detail</h2>
+<hr>
+
+<form>
+    <div class="mb-3">
+        <label class="form-label"><strong>Vendor</strong></label>
+        <input type="text" class="form-control" value="{{ document.vendor.name }}" disabled>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><strong>Document Type</strong></label>
+        <input type="text" class="form-control" value="{{ document.get_document_type_display }}" disabled>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><strong>Uploaded At</strong></label>
+        <input type="text" class="form-control" value="{{ document.uploaded_at }}" disabled>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label"><strong>Uploaded File</strong></label>
+        <input type="text" class="form-control mb-2" value="{{ document.file.name|default:'No file' }}" disabled>
+        {% if document.file %}
+        <a href="{{ document.file.url }}" target="_blank" class="btn btn-outline-primary">View File</a>
+        {% else %}
+        <span class="text-muted">No file uploaded.</span>
+        {% endif %}
+    </div>
+
+    <a href="{% url 'documents:document_list' %}" class="btn btn-secondary">Back to List</a>
+    <a href="{% url 'documents:document_edit' document.pk %}" class="btn btn-warning">Edit</a>
+</form>
+{% endblock %}

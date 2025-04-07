@@ -9,6 +9,8 @@
     <a href="{% url 'documents:document_create' %}" class="btn btn-primary">
         Add Documents
     </a>
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -25,7 +27,10 @@
             <td>{{ document.get_document_type_display }}</td>
             <td>{{ document.uploaded_at }}</td>
             <td>
-                <a href="{{ document.file.url }}" target="_blank" class="btn btn-info">View</a>
+                <a href="{% url 'documents:document_detail' document.pk %}" class="btn btn-secondary">View</a>
+                
+                <a href="{% url 'documents:document_edit' document.pk %}" class="btn btn-warning">Edit</a>
+                
                 <form method="POST" action="{% url 'documents:document_delete' document.pk %}" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</button>

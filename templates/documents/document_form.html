@@ -24,7 +24,9 @@
                             <div id="document-fields-container">
                                 <div class="document-fields">
                                     {{ form.document_type|as_crispy_field }}
-                                    {{ form.file|as_crispy_field }}
+                                    <div class="file-wrapper">
+                                        {{ form.file|as_crispy_field }}
+                                    </div>
                                 </div>
                             </div>
 
@@ -41,23 +43,69 @@
     </div>
 </div>
 
+<!-- Scripts -->
 <script>
+    function createFileInput(name, labelText) {
+        const div = document.createElement('div');
+        div.classList.add('form-group');
+
+        const label = document.createElement('label');
+        label.innerText = labelText;
+
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.name = name;
+        input.classList.add('form-control');
+
+        div.appendChild(label);
+        div.appendChild(input);
+        return div;
+    }
+
     function addMoreFields() {
         const container = document.getElementById('document-fields-container');
         const currentFields = container.querySelectorAll('.document-fields');
         const lastFields = currentFields[currentFields.length - 1];
-        const documentType = lastFields.querySelector('select');
-        const fileInput = lastFields.querySelector('input[type="file"]');
 
-        if (!documentType.value || !fileInput.files.length) {
+        const documentType = lastFields.querySelector('select');
+        const fileInputs = lastFields.querySelectorAll('input[type="file"]');
+
+        if (!documentType.value || Array.from(fileInputs).some(input => !input.files.length)) {
             alert("Please fill in the current fields before adding more.");
             return;
         }
 
         const newFields = lastFields.cloneNode(true);
-        newFields.querySelector('select').value = "";
-        newFields.querySelector('input[type="file"]').value = "";
+
+        // Reset select and file fields
+        newFields.querySelector('select').value = '';
+        const fileWrapper = newFields.querySelector('.file-wrapper');
+        fileWrapper.innerHTML = '';
+        fileWrapper.appendChild(createFileInput('file', 'Upload Document'));
+
         container.appendChild(newFields);
     }
+
+    // Handle citizenship selection dynamically
+    document.addEventListener('change', function (e) {
+        if (e.target.matches('select')) {
+            const wrapper = e.target.closest('.document-fields');
+            const fileWrapper = wrapper.querySelector('.file-wrapper');
+            
+            if (e.target.value.toLowerCase() === 'citizenship') {
+                fileWrapper.innerHTML = '';
+                fileWrapper.appendChild(createFileInput('file', 'Upload Front Side'));
+                fileWrapper.appendChild(createFileInput('file', 'Upload Back Side'));
+            
+            }
+        }
+    });
+
+    // Pre-trigger change event on load (for edit scenarios)
+    window.addEventListener('load', function () {
+        document.querySelectorAll('select').forEach(select => {
+            select.dispatchEvent(new Event('change'));
+        });
+    });
 </script>
 {% endblock content %}
