@@ -16,15 +16,19 @@
 <table class="table">
     <thead>
         <tr>
+            <th>S.N.</th>
             <th>Vendor</th>
             <th>Document Type</th>
             <th>Uploaded At</th>
             <th>Updated At</th>
+            <th>Actions</th>
+
         </tr>
     </thead>
     <tbody>
         {% for document in documents %}
         <tr>
+            <td>{{ forloop.counter }}</td> 
             <td>{{ document.vendor.name }}</td>
             <td>{{ document.get_document_type_display }}</td>
             <td>{{ document.uploaded_at|localtime }}</td>
