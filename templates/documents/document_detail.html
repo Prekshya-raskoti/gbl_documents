@@ -24,13 +24,15 @@
         <label class="form-label"><strong>Uploaded File</strong></label>
         <input type="text" class="form-control mb-2" value="{{ document.file.name|default:'No file' }}" disabled>
         {% if document.file %}
-        <a href="{{ document.file.url }}" target="_blank" class="btn btn-outline-primary">View File</a>
+        <a href="{{ document.file.url }}" target="_blank" class="btn btn-primary">View File</a>
         {% else %}
         <span class="text-muted">No file uploaded.</span>
         {% endif %}
     </div>
 
     <a href="{% url 'documents:document_list' %}" class="btn btn-secondary">Back to List</a>
-    <a href="{% url 'documents:document_edit' document.pk %}" class="btn btn-warning">Edit</a>
+    <a href="{% url 'documents:document_edit' document.pk %}" class="btn btn-warning">
+        <i class="fa fa-edit"></i>
+    </a>
 </form>
 {% endblock %}
