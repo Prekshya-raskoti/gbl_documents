@@ -9,31 +9,69 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render
 from .forms import VendorForm
 from django.contrib.auth import logout
-
-
-def custom_login_view(request):
-    if request.user.is_authenticated:
-        return redirect(reverse('user:user_vendor_list'))
-
-    if request.method == 'POST':
+from django.views import View
+class LoginView(View):
+    template_name = 'auth/login.html'
+    
+    def get(self, request):
+        if request.user.is_authenticated:
+            return self.redirect_authenticated_user(request.user)
+        
+        form = AuthenticationForm()
+        return render(request, self.template_name, {'form': form})
+    
+    def post(self, request):
         form = AuthenticationForm(request, data=request.POST)
+        
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            
+            next_url = request.GET.get('next')
+            if next_url:
+                return redirect(next_url)
+                
+            return self.redirect_authenticated_user(user)
+        else:
+            messages.error(request, "Invalid username or password")
+            return render(request, self.template_name, {'form': form})
+    
+    def redirect_authenticated_user(self, user):
+        if user.is_superuser:
+            return redirect(reverse('user:user_vendor_list'))
+        elif hasattr(user, 'vendor_profile'):
             return redirect(reverse('user:user_vendor_list'))
         else:
-            form = AuthenticationForm()
+            return redirect(reverse('user:user_vendor_list'))  # Redirect to a different page for other users
 
-        return render(request, 'registration/login.html', {'form': form})
-    form = AuthenticationForm(request, data=request.POST)
-    return render(request, 'registration/login.html', {'form': form})
-    
 def logout_view(request):
-    logout(request)  
-    return redirect(reverse('user:logged_out')) 
+    logout(request)
+    messages.success(request, "You have been logged out successfully")
+    return redirect(reverse('login'))
 
-def logged_out_view(request):
-    return render(request, 'registration/logged_out.html')  
+# def custom_login_view(request):
+#     if request.user.is_authenticated:
+#         return redirect(reverse('user:user_vendor_list'))
+
+#     if request.method == 'POST':
+#         form = AuthenticationForm(request, data=request.POST)
+#         if form.is_valid():
+#             user = form.get_user()
+#             login(request, user)
+#             return redirect(reverse('user:user_vendor_list'))
+#         else:
+#             form = AuthenticationForm()
+
+#         return render(request, 'registration/login.html', {'form': form})
+#     form = AuthenticationForm(request, data=request.POST)
+#     return render(request, 'registration/login.html', {'form': form})
+    
+# def logout_view(request):
+#     logout(request)  
+#     return redirect(reverse('user:logged_out')) 
+
+# def logged_out_view(request):
+#     return render(request, 'registration/logged_out.html')  
 
 class VendorListView(ListView):
     model = Vendor

@@ -60,7 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'gbl_documents.middleware.RestrictUserMiddleware',
+    'gbl_documents.middleware.AuthMiddleware',
 ]
 
 ROOT_URLCONF = 'gbl_documents.urls'
@@ -143,5 +143,5 @@ AUTH_USER_MODEL = "user.User"
 
 LOGIN_URL = '/login/'         
 LOGIN_REDIRECT_URL = '/user/vendor/'
-LOGOUT_URL = '/login/'  
+LOGOUT_URL = '/logout/'  
 LOGOUT_REDIRECT_URL = '/login/'

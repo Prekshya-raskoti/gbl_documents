@@ -1,30 +1,45 @@
 from django.shortcuts import redirect
-from django.contrib.auth.views import redirect_to_login
 from django.contrib import messages
-from django.http import Http404
-from django.utils.deprecation import MiddlewareMixin
-
-class RestrictUserMiddleware(MiddlewareMixin):
-    login_url = '/login/'
-
-    def process_request(self, request):
-        path = request.path
-
-        public_paths = [
-            "/login/", "/logout", "/api", "/admin", "/media", "/static", "/password_reset_view", "/email_verify", "/change_password","/favicon.ico"
+class AuthMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self.exempt_urls = [
+            '/login/',
+            '/admin/',
+            '/logout/',
+            '/api/',
+            '/media/',
+            '/static/',
+            '/password_reset_view/',
+            '/email_verify/',
+            '/change_password/',
+            '/favicon.ico',
         ]
-
-        if any(path.startswith(p) for p in public_paths):
-            return None
-
-        if not request.user.is_authenticated:
-            if not path.startswith('/accounts/login/'):
-                return redirect_to_login(request.get_full_path(), self.login_url)
-
-        if path == '/accounts/login/' and request.user.is_authenticated:
-            return redirect('user:user_vendor_list')  
-        if path.startswith('/user/vendor/') and not request.user.is_superuser:
-            messages.error(request, "You do not have permission to access this section.")
-            raise Http404("Page not found")
-
-        return None
+    
+    def __call__(self, request):
+        path = request.path_info
+        
+        if any(path.startswith(url) for url in self.exempt_urls):
+            return self.get_response(request)
+            
+        if request.user.is_authenticated:
+            if path.startswith('/user/vendor/') and not request.user.is_superuser:
+                messages.error(request, "You do not have permission to access this section.")
+                return redirect('user_dashboard')
+            return self.get_response(request)
+            
+        return redirect(f"/login/?next={request.path}")
+    
+    async def __acall__(self, request):
+        path = request.path_info
+        
+        if any(path.startswith(url) for url in self.exempt_urls):
+            return await self.get_response(request)
+            
+        if request.user.is_authenticated:
+            if path.startswith('/user/vendor/') and not request.user.is_superuser:
+                messages.error(request, "You do not have permission to access this section.")
+                return redirect('login')
+            return await self.get_response(request)
+            
+        return redirect(f"/login/?next={request.path}")
