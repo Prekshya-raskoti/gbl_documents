@@ -121,13 +121,11 @@ body {
   opacity: 0.8;
 
 }
-
 .sidebar {
   width: 250px;
   position: fixed;
   background-color: rgb(39, 36, 37);
 }
-
 .main-content {
   margin-left: 260px;
 }
