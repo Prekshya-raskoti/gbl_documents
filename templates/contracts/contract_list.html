@@ -19,8 +19,10 @@
 
             <!-- Notification dropdown -->
             <div id="notification-dropdown" class="dropdown-menu" style="display: none; position: absolute; top: 30px; right: 0; width: 300px; z-index: 1000;">
-                <div class="dropdown-header">
+                <div class="dropdown-header d-flex justify-content-between">
                     <strong>Expiring Contracts</strong>
+                    <!-- Close button for the dropdown -->
+                    <button type="button" id="close-dropdown" class="btn-close" style="font-size: 14px;" aria-label="Close"></button>
                 </div>
                 {% if expiring_contracts %}
                     <ul class="list-group">
@@ -91,6 +93,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         const bellIcon = document.getElementById('bell-icon');
         const notificationDropdown = document.getElementById('notification-dropdown');
+        const closeDropdownButton = document.getElementById('close-dropdown');
 
         // Toggle the visibility of the notification dropdown when the bell is clicked
         bellIcon.addEventListener('click', function () {
@@ -99,6 +102,11 @@
             } else {
                 notificationDropdown.style.display = 'none';
             }
+        });
+
+        // Close the notification dropdown when the close button is clicked
+        closeDropdownButton.addEventListener('click', function () {
+            notificationDropdown.style.display = 'none';
         });
     });
 </script>
