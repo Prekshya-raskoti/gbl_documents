@@ -10,8 +10,20 @@ body {
   color: #4f5f6f;
   overflow-x: hidden; }
 
+  .nav-link.active {
+    background-color: #dc3545;
+    color: white !important;
+    border-radius: 5px;
+    margin-top: 15px;
+}
 
-  /* Login page specific styling */
+.user-profile-section{
+  margin-top: 25px;
+}
+
+.formFooter {
+  margin-top: 5px;
+}
 .auth {
   background-color: #f5f5f5;
   display: flex;
@@ -81,45 +93,25 @@ body {
 }
 
 .auth .btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: #dc3545;
+  border-color: #dc3545;
   transition: background-color 0.3s;
   padding: 10px 15px;
   font-weight: 500;
 }
 
-.auth .btn-primary:hover {
-  background-color: #0069d9;
-  border-color: #0062cc;
-}
-
-.formFooter {
-  text-align: center;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-top: 1px solid #e9ecef;
-}
-
 .btn-social-icon {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 10px;
-  color: #fff;
   text-decoration: none;
+  font-size: 50px;
 }
 
-.btn-facebook {
-  background-color: #3b5998;
-}
-
-.btn-facebook:hover {
-  background-color: #344e86;
-}
-/* User profile styling */
 .profile-circle {
   width: 40px;
   height: 40px;
@@ -138,16 +130,10 @@ body {
   background-color: #5a6268;
 }
 
-.user-profile-section {
-  display: flex;
-  align-items: center;
-  padding: 15px 10px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
 .user-info {
-  margin-left: 10px;
+  margin-left: 50px;
+  margin-top: -30px;
+  margin-bottom: 20px;
 }
 
 .username {
@@ -158,6 +144,7 @@ body {
 .user-role {
   font-size: 0.8rem;
   opacity: 0.8;
+
 }
 
 .sidebar {

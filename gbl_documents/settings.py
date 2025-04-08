@@ -55,9 +55,9 @@ INSTALLED_APPS = [
 CRISPY_TEMPLATE_PACK = 'bootstrap5'  
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Default: Use database-backed sessions
-SESSION_COOKIE_SECURE = False  # Set to True if using HTTPS
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Set to True if you want sessions to expire on browser close
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  
+SESSION_COOKIE_SECURE = False  
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -83,6 +83,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'gbl_documents.context_processors.current_path',
             ],
         },
     },
@@ -149,6 +150,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "user.User"
 
 LOGIN_URL = '/login/'         
-LOGIN_REDIRECT_URL = '/user/vendor/'
+LOGIN_REDIRECT_URL = '/vendor/'
 LOGOUT_URL = '/logout/'  
 LOGOUT_REDIRECT_URL = '/login/'
