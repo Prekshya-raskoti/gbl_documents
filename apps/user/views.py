@@ -53,7 +53,7 @@ def logout_view(request):
 
 class VendorListView(ListView):
     model = Vendor
-    template_name = 'user/user_vendor_list.html'
+    template_name = 'user/vendor_list.html'
     context_object_name = 'vendors'
     
 class VendorCreateView(CreateView):
