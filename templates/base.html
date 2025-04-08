@@ -27,25 +27,27 @@
                     <span class="user-role">{% if user.is_superuser %}{% else %}User{% endif %}</span>
                 </div>
             </div>
-            
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'user:user_vendor_list' %}">
+                    <a class="nav-link text-white {% if '/user/vendor' in current_path %}active{% endif %}" 
+                       href="{% url 'user:user_vendor_list' %}">
                         <i class="fa fa-building me-2"></i> Vendor Profile
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'documents:document_list' %}">
+                    <a class="nav-link text-white {% if '/documents' in current_path %}active{% endif %}" 
+                       href="{% url 'documents:document_list' %}">
                         <i class="fa fa-upload me-2"></i> Upload Documents
                     </a>
                 </li>
+                
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'user:user_vendor_list' %}">
+                    <a class="nav-link text-white {% if '/user/vendor' in current_path %}active{% endif %}" 
+                       href="{% url 'user:user_vendor_list' %}">
                         <i class="fa fa-folder me-2"></i> View Contracts
                     </a>
-                </li>
+                </li>            
             </ul>
-
             <div class="flex-grow-1"></div>
     
             <div class="mt-auto">

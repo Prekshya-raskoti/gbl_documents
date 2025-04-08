@@ -10,6 +10,11 @@ body {
   color: #4f5f6f;
   overflow-x: hidden; }
 
+  .nav-link.active {
+    background-color: #dc3545;
+    color: white !important;
+    border-radius: 5px;
+}
 
   /* Login page specific styling */
 .auth {
