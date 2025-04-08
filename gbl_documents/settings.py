@@ -55,7 +55,9 @@ INSTALLED_APPS = [
 CRISPY_TEMPLATE_PACK = 'bootstrap5'  
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
-
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Default: Use database-backed sessions
+SESSION_COOKIE_SECURE = False  # Set to True if using HTTPS
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Set to True if you want sessions to expire on browser close
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -65,6 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'gbl_documents.middleware.AuthMiddleware',
 ]
 
 ROOT_URLCONF = 'gbl_documents.urls'
@@ -135,9 +138,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "user.User"
+
+LOGIN_URL = '/login/'         
+LOGIN_REDIRECT_URL = '/user/vendor/'
+LOGOUT_URL = '/logout/'  
+LOGOUT_REDIRECT_URL = '/login/'
