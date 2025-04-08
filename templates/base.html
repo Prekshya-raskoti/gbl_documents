@@ -24,7 +24,7 @@
                 </div>
                 <div class="user-info">
                     <p class="username">{{ user.username }}</p>
-                    <span class="user-role">{% if user.is_superuser %}Administrator{% else %}User{% endif %}</span>
+                    <span class="user-role">{% if user.is_superuser %}{% else %}User{% endif %}</span>
                 </div>
             </div>
             
