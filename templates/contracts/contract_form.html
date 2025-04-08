@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load static%}
+
+<link rel="stylesheet" href="{% static 'css/app-custom.css' %}">
+
+
 
 {% block content %}
 <a class="btn btn-success-outline" href="{% url 'contracts:contract_list' %}">
@@ -100,37 +105,5 @@
         }
     }
 </script>
-
-<!-- Additional styling for the remove button -->
-<style>
-    .remove-btn {
-        background-color: transparent;
-        border: none;
-        color: #dc3545; /* Red color for the remove text */
-        font-size: 1rem; /* Adjust the size for the text */
-        cursor: pointer;
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        padding: 5px;
-    }
-    
-    .remove-btn:hover {
-        color: #ffffff;
-    }
-
-    .form-group {
-        position: relative;
-    }
-
-    /* Add spacing only to dynamically added file input fields */
-    .additional-file-field {
-        margin-bottom: 1.5rem; /* Add spacing below dynamically added fields */
-    }
-
-    .form-group input[type="file"] {
-        margin-top: 10px;
-    }
-</style>
 
 {% endblock content %}

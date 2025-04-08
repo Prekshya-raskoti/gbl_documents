@@ -1,14 +1,32 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from datetime import timedelta
+from django.utils import timezone
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import redirect
+
 from .models import Contract
 from .forms import ContractForm
 
-class ContractListView(ListView):
-    model = Contract
-    template_name = 'contracts/contract_list.html'
-    context_object_name = 'contracts'
+
+def contract_list(request):
+    now = timezone.now()
+
+    # Get all contracts
+    contracts = Contract.objects.all()
+
+    # Filter those that expire in the next 7 days
+    expiring_contracts = contracts.filter(
+        expiry_date__lte=now + timedelta(days=7),
+        expiry_date__gt=now
+    )
+    
+
+    return render(request, 'contracts/contract_list.html', {
+        'contracts': contracts,
+        'expiring_contracts': expiring_contracts
+    })
 
 class ContractDetailView(DetailView):
     model = Contract
@@ -52,3 +70,4 @@ class ContractDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, "Contract deleted successfully.")
         return super().delete(request, *args, **kwargs)
+
