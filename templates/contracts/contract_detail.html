@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Contract Detail</h2>
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Vendor:</strong> {{ contract.vendor.name }}</p>
+            <p><strong>Join Date:</strong> {{ contract.join_date }}</p>
+            <p><strong>Expiry Date:</strong> {{ contract.expiry_date }}</p>
+            <p><strong>Terms & Conditions:</strong></p>
+            <p>{{ contract.terms_conditions }}</p>
+            <p><strong>Uploaded by:</strong> {{ contract.created_by.username }}</p>
+            <p><strong>Uploaded at:</strong> {{ contract.created_at }}</p>
+            <p><strong>File:</strong> <a href="{{ contract.file.url }}" target="_blank">Download</a></p>
+        </div>
+    </div>
+
+    <a href="{% url 'contracts:contract_update' contract.pk %}" class="btn btn-warning mt-3">Edit</a>
+    <a href="{% url 'contracts:contract_list' %}" class="btn btn-secondary mt-3">Back to List</a>
+</div>
+{% endblock %}

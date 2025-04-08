@@ -4,7 +4,7 @@ from .views import DocumentListView, DocumentCreateView, DocumentDeleteView, Doc
 app_name = 'documents'
 
 urlpatterns = [
-    path('', DocumentListView.as_view(), name='document_list'),
+    path('list', DocumentListView.as_view(), name='document_list'),
     path('upload/', DocumentCreateView.as_view(), name='document_create'),
     path('delete/<int:pk>/', DocumentDeleteView.as_view(), name='document_delete'),
     path('edit/<int:pk>/', DocumentUpdateView.as_view(), name='document_edit'),

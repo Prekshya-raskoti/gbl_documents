@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<a class="btn btn-success-outline" href="{% url 'contracts:contract_list' %}">
+    <i class="fa fa-angle-left"></i> Back
+</a>
+<div class="card card-default p-10">
+    <div class="card-body">
+        <div class="body-block">
+            <section class="section">
+                <div class="row sameheight-container">
+                    <div class="col-md-6">
+                        <form method="POST" enctype="multipart/form-data" id="contract-form">
+                            {% csrf_token %}
+
+                            {{ form.vendor|as_crispy_field }}
+
+                            <h3 class="mt-3">Contract Details</h3>
+
+                            <div class="form-group">
+                                {{ form.join_date|as_crispy_field }}
+                            </div>
+
+                            <div class="form-group">
+                                {{ form.expiry_date|as_crispy_field }}
+                            </div>
+
+                            <!-- Original file field (without spacing) -->
+                            <div id="contract-file-fields-container">
+                                <div class="form-group" id="file-field-1">
+                                    {{ form.file|as_crispy_field }}
+                                </div>
+                            </div>
+
+                            <div class="form-group d-flex justify-content-between mt-4">
+                                <button type="button" class="btn btn-secondary" onclick="addMoreFields()">Add more</button>
+                                <button type="submit" class="btn btn-primary">Update Contract</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to create a new file input field with a remove button
+    function createFileInput(name, labelText, fieldId) {
+        const div = document.createElement('div');
+        div.classList.add('form-group', 'additional-file-field'); // Add a class for spacing on dynamically added fields
+        div.id = fieldId;
+
+        const removeButton = document.createElement('button');
+        removeButton.type = 'button';
+        removeButton.classList.add('btn', 'btn-danger', 'remove-file-field', 'remove-btn');
+        removeButton.innerText = 'Remove'; // Changed to 'Remove' text
+        removeButton.onclick = function() {
+            removeField(fieldId);
+        };
+
+        const label = document.createElement('label');
+        label.innerText = labelText;
+
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.name = name;
+        input.classList.add('form-control');
+
+        div.appendChild(removeButton); // Place the remove button at the top
+        div.appendChild(label);
+        div.appendChild(input);
+
+        return div;
+    }
+
+    // Function to add more file fields dynamically
+    function addMoreFields() {
+        const container = document.getElementById('contract-file-fields-container');
+        const currentFields = container.querySelectorAll('.form-group');
+        
+        // Check if the last field has a selected file before adding more
+        const lastFileInput = currentFields[currentFields.length - 1].querySelector('input[type="file"]');
+        if (!lastFileInput.files.length) {
+            alert("Please select a file before adding more.");
+            return;
+        }
+
+        const newFieldId = `file-field-${currentFields.length + 1}`;
+        const newField = createFileInput('file', 'Upload Another File', newFieldId);
+        container.appendChild(newField);
+    }
+
+    // Function to remove a file input field
+    function removeField(fieldId) {
+        const fieldToRemove = document.getElementById(fieldId);
+        if (fieldToRemove) {
+            fieldToRemove.remove();
+        }
+    }
+</script>
+
+<!-- Additional styling for the remove button -->
+<style>
+    .remove-btn {
+        background-color: transparent;
+        border: none;
+        color: #dc3545; /* Red color for the remove text */
+        font-size: 1rem; /* Adjust the size for the text */
+        cursor: pointer;
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        padding: 5px;
+    }
+    
+    .remove-btn:hover {
+        color: #ffffff;
+    }
+
+    .form-group {
+        position: relative;
+    }
+
+    /* Add spacing only to dynamically added file input fields */
+    .additional-file-field {
+        margin-bottom: 1.5rem; /* Add spacing below dynamically added fields */
+    }
+
+    .form-group input[type="file"] {
+        margin-top: 10px;
+    }
+</style>
+
+{% endblock content %}

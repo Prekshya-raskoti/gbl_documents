@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load tz %}
+{% load static %}
+
+{% block content %}
+
+<div>
+    <h2>Vendor Contracts</h2>
+    <hr>
+    <div class="mb-3">
+        <a href="{% url 'contracts:contract_create' %}" class="btn btn-primary">
+            Create New Contract
+        </a>
+    </div>
+
+    {% if contracts %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>S.N.</th>
+                    <th>Vendor</th>
+                    <th>Join Date</th>
+                    <th>Expiry Date</th>
+                    <th>Uploaded By</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for contract in contracts %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ contract.vendor.name }}</td>
+                        <td>{{ contract.join_date }}</td>
+                        <td>{{ contract.expiry_date }}</td>
+                        <td>{{ contract.created_by.username }}</td>
+                        <td>
+                            <a href="{% url 'contracts:contract_detail' contract.pk %}" class="btn btn-secondary">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                            <a href="{% url 'contracts:contract_update' contract.pk %}" class="btn btn-secondary">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <form method="POST" action="{% url 'contracts:contract_delete' contract.pk %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No contracts available.</p>
+    {% endif %}
+</div>
+{% endblock content %}

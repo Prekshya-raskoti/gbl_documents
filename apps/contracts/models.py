@@ -1,9 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
 from apps.user.models import Vendor
+
 class Contract(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='contracts')
+    file = models.FileField(upload_to='vendor_contracts/')
     join_date = models.DateField()
     expiry_date = models.DateField()
     terms_conditions = models.TextField()
