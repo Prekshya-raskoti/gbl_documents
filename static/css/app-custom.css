@@ -33,32 +33,6 @@ body {
   padding: 20px;
 }
 
-.auth-container {
-  width: 100%;
-  max-width: 450px;
-  margin: 0 auto;
-}
-
-.auth .card {
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  background-color: #fff;  
-  overflow: hidden;
-}
-
-.auth-header {
-  padding: 20px;
-  text-align: center;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-}
-
-.auth-title {
-  margin: 0;
-  font-size: 26px;
-  font-weight: bold;
-}
-
 .span-red {
   color: #dc3545;
 }
@@ -110,6 +84,7 @@ body {
   margin-bottom: 10px;
   text-decoration: none;
   font-size: 50px;
+  margin-top: -60px;
 }
 
 .profile-circle {
@@ -156,6 +131,9 @@ body {
 .main-content {
   margin-left: 260px;
 }
+div.card{
+  border-radius: 15px;
+}
 
 .alert {
   transition: opacity 0.5s;
@@ -167,12 +145,7 @@ body {
   font-style: italic;
 }
 
-.main-wrapper {
-  width: 100%;
-  position: absolute;
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden; }
+
 
 #ref .color-primary {
   color: #EF6359; }
@@ -209,7 +182,8 @@ body {
   left: 0;
   background-color: #EF6359;
   overflow-x: hidden;
-  overflow-y: auto; }
+  overflow-y: auto; 
+}
 
 .auth-container {
   user-select: none;
@@ -229,16 +203,25 @@ body {
     line-height: 30px;
     font-size: 26px;
     font-weight: 600;
-    margin: 0; }
+    margin: 0; 
+  }
+
   .auth-container .auth-content {
     padding: 30px 50px;
-    min-height: 260px; }
+    min-height: 260px;
+   }
+
   .auth-container .forgot-btn {
-    line-height: 28px; }
+    line-height: 28px;
+   }
+
   .auth-container .checkbox label {
-    padding: 0; }
+    padding: 0; 
+  }
   .auth-container .checkbox a {
-    vertical-align: text-top; }
+    vertical-align: text-top; 
+  }
   .auth-container .checkbox span {
-    color: #4f5f6f; }
+    color: #4f5f6f; 
+  }
 
