@@ -10,14 +10,6 @@
 {% endblock %}
 
 {% block content %}
-{% if messages %}
-    <div class="alert alert-danger fade-in-out" id="message-alert">
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    </div>
-{% endif %}
-
 <div class="auth">
     <div class="auth-container">
         <div class="card">
@@ -50,6 +42,12 @@
 
                     <br>
                     <input type="submit" class="btn btn-block btn-primary w-100 my-3" value="Login">
+                    {% if form.non_field_errors %}
+                        <div id="login-error-message" class="text-danger text-center mt-2">
+                            Invalid username or password
+                         </div>
+                    {% endif %}
+
                 </form>
             </div>
             <div class="formFooter text-center">
@@ -73,15 +71,12 @@
             x.type = "password";
         }
     }
-
     setTimeout(function() {
-        var alertMessage = document.getElementById('message-alert');
-        if (alertMessage) {
-            alertMessage.style.opacity = 0;
-            setTimeout(function() {
-                alertMessage.style.display = 'none';
-            }, 500); 
+        let errorMsg = document.getElementById('login-error-message');
+        if (errorMsg) {
+            errorMsg.style.opacity = 0;
+            setTimeout(() => errorMsg.remove(), 500);
         }
-    }, 3000); 
+    }, 6000);
 </script>
 {% endblock scripts %}
