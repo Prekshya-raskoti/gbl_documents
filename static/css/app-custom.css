@@ -10,6 +10,115 @@ body {
   color: #4f5f6f;
   overflow-x: hidden; }
 
+
+  /* Login page specific styling */
+.auth {
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+}
+
+.auth .card {
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;  
+  overflow: hidden;
+}
+
+.auth-header {
+  padding: 20px;
+  text-align: center;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.auth-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.span-red {
+  color: #dc3545;
+}
+
+.span-blue {
+  color: #007bff;
+}
+
+.auth-content {
+  padding: 30px;
+}
+
+.auth .form-control.underlined {
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px solid #ddd;
+  padding-left: 0;
+}
+
+.auth .form-control.underlined:focus {
+  border-color: #007bff;
+  box-shadow: none;
+}
+
+.auth .control-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.auth .checkbox {
+  margin-right: 8px;
+}
+
+.auth .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  transition: background-color 0.3s;
+  padding: 10px 15px;
+  font-weight: 500;
+}
+
+.auth .btn-primary:hover {
+  background-color: #0069d9;
+  border-color: #0062cc;
+}
+
+.formFooter {
+  text-align: center;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+.btn-social-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.btn-facebook {
+  background-color: #3b5998;
+}
+
+.btn-facebook:hover {
+  background-color: #344e86;
+}
 /* User profile styling */
 .profile-circle {
   width: 40px;
@@ -145,17 +254,4 @@ body {
     vertical-align: text-top; }
   .auth-container .checkbox span {
     color: #4f5f6f; }
-
-@media (max-width: 767.98px) {
-  .auth-container {
-    width: 100%;
-    position: relative;
-    left: 0;
-    top: 0;
-    -webkit-transform: inherit;
-            transform: inherit;
-    margin: 0;
-    margin-bottom: 10px; }
-    .auth-container .auth-content {
-      padding: 30px 25px; } }
 

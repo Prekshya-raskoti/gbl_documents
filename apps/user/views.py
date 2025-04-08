@@ -1,15 +1,14 @@
 from django.contrib import messages
 from django.shortcuts import redirect
-from django.views.generic import ListView ,CreateView , DeleteView ,UpdateView
+from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 from .models import Vendor
 from django.urls import reverse_lazy, reverse
-from django.shortcuts import redirect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render
 from .forms import VendorForm
-from django.contrib.auth import logout
 from django.views import View
+
 class LoginView(View):
     template_name = 'auth/login.html'
     
@@ -27,10 +26,12 @@ class LoginView(View):
             user = form.get_user()
             login(request, user)
             
+            messages.success(request, "You have successfully logged in!")
+            
             next_url = request.GET.get('next')
             if next_url:
                 return redirect(next_url)
-                
+            
             return self.redirect_authenticated_user(user)
         else:
             messages.error(request, "Invalid username or password")
@@ -42,36 +43,13 @@ class LoginView(View):
         elif hasattr(user, 'vendor_profile'):
             return redirect(reverse('user:user_vendor_list'))
         else:
-            return redirect(reverse('user:user_vendor_list'))  # Redirect to a different page for other users
-
+            return redirect(reverse('user:user_vendor_list'))
 def logout_view(request):
-    logout(request)
-    messages.success(request, "You have been logged out successfully")
-    return redirect(reverse('login'))
-
-# def custom_login_view(request):
-#     if request.user.is_authenticated:
-#         return redirect(reverse('user:user_vendor_list'))
-
-#     if request.method == 'POST':
-#         form = AuthenticationForm(request, data=request.POST)
-#         if form.is_valid():
-#             user = form.get_user()
-#             login(request, user)
-#             return redirect(reverse('user:user_vendor_list'))
-#         else:
-#             form = AuthenticationForm()
-
-#         return render(request, 'registration/login.html', {'form': form})
-#     form = AuthenticationForm(request, data=request.POST)
-#     return render(request, 'registration/login.html', {'form': form})
-    
-# def logout_view(request):
-#     logout(request)  
-#     return redirect(reverse('user:logged_out')) 
-
-# def logged_out_view(request):
-#     return render(request, 'registration/logged_out.html')  
+    if request.method == 'POST':
+        logout(request)
+        return redirect(reverse('login'))
+    else:
+        return render(request, 'auth/logout_confirm.html')
 
 class VendorListView(ListView):
     model = Vendor

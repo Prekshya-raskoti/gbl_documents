@@ -47,15 +47,12 @@
             </ul>
 
             <div class="flex-grow-1"></div>
-            
+    
             <div class="mt-auto">
                 <hr>
-                <form method="POST" action="{% url 'logout' %}" class="text-center">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-light w-100">
-                        <i class="fa fa-sign-out-alt me-2"></i> Logout
-                    </button>
-                </form>
+                <a href="{% url 'logout' %}" onclick="confirmLogout(event)" class="btn btn-outline-light w-100">
+                    <i class="fa fa-sign-out-alt me-2"></i> Logout
+                </a>
             </div>
         </nav>
         
@@ -85,8 +82,8 @@
                 setTimeout(() => alert.remove(), 500);
             });
         }, 3000);
+
     </script>
-    
     {% block extra_js %}{% endblock %}
 </body>
 </html>
