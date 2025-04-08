@@ -7,6 +7,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/app-custom.css' %}">
+<link rel = "icon" href ="{% static "assets/HR_icon.png"%}"type = "image/x-icon">
+
 {% endblock %}
 
 {% block content %}
@@ -19,7 +21,14 @@
                 </h1>
             </header>
             <div class="auth-content">
-                <p class="text-center">LOGIN TO CONTINUE</p>
+                <p class="text-center">
+                    <strong>LOGIN TO CONTINUE</strong>
+                    </p>
+                {% if form.non_field_errors %}
+                <div id="login-error-message" class="text-danger text-center mt-2">
+                    Invalid username or password
+                 </div>
+                {% endif %}
                 <br/>
                 <form method="POST" action="{% url 'login' %}">
                     {% csrf_token %}
@@ -42,12 +51,7 @@
 
                     <br>
                     <input type="submit" class="btn btn-block btn-primary w-100 my-3" value="Login">
-                    {% if form.non_field_errors %}
-                        <div id="login-error-message" class="text-danger text-center mt-2">
-                            Invalid username or password
-                         </div>
-                    {% endif %}
-
+                    
                 </form>
             </div>
             <div class="formFooter text-center">
@@ -77,6 +81,6 @@
             errorMsg.style.opacity = 0;
             setTimeout(() => errorMsg.remove(), 500);
         }
-    }, 6000);
+    }, 5000);
 </script>
 {% endblock scripts %}
