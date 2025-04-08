@@ -39,18 +39,18 @@
             <td>{{ document.updated_at|localtime }}</td> 
 
             <td>
-                <a href="{% url 'documents:document_detail' document.pk %}" class="btn btn-secondary">
+                <a href="{% url 'documents:document_detail' document.pk %}" class="btn btn-secondary btn-sm">
                     <i class="fa fa-eye"></i>
 
                 </a>
                 
-                <a href="{% url 'documents:document_edit' document.pk %}" class="btn btn-warning">
+                <a href="{% url 'documents:document_edit' document.pk %}" class="btn btn-warning btn-sm">
                     <i class="fa fa-edit"></i>
                 </a>
                 
                 <form method="POST" action="{% url 'documents:document_delete' document.pk %}" style="display:inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
                         <i class="fa fa-trash"></i>
                     </button>
                 </form>
