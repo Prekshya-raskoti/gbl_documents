@@ -9,6 +9,13 @@ from django.shortcuts import render
 from .forms import VendorForm
 from django.views import View
 
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.views import View
+from django.urls import reverse
+
 class LoginView(View):
     template_name = 'auth/login.html'
     
@@ -25,7 +32,6 @@ class LoginView(View):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            
             messages.success(request, "You have successfully logged in!")
             
             next_url = request.GET.get('next')
@@ -44,6 +50,7 @@ class LoginView(View):
             return redirect(reverse('user:user_vendor_list'))
         else:
             return redirect(reverse('user:user_vendor_list'))
+        
 def logout_view(request):
     if request.method == 'POST':
         logout(request)

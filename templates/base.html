@@ -30,13 +30,13 @@
             </div>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link text-white {% if '/vendor' in current_path %}active{% endif %}" 
+                    <a class="nav-link text-white {% if '/vendor' in current_path or 'user_vendor_list' in current_path %}active{% endif %}" 
                        href="{% url 'user:user_vendor_list' %}">
                         <i class="fa fa-building me-2"></i> Vendor Profile
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white {% if '/documents' in current_path %}active{% endif %}" 
+                    <a class="nav-link text-white {% if '/documents' in current_path or 'document_list' in current_path %}active{% endif %}" 
                        href="{% url 'documents:document_list' %}">
                         <i class="fa fa-upload me-2"></i> Upload Documents
                     </a>
@@ -85,8 +85,8 @@
                 setTimeout(() => alert.remove(), 500);
             });
         }, 3000);
-
     </script>
+    
     {% block extra_js %}{% endblock %}
 </body>
 </html>
