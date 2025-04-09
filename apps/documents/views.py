@@ -9,6 +9,7 @@ class DocumentListView(ListView):
     model = Document
     template_name = 'documents/document_list.html'
     context_object_name = 'documents'
+    paginate_by = 10 # Number of documents per page
 
 class DocumentCreateView(CreateView):
     model = Document

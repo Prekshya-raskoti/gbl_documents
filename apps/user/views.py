@@ -51,6 +51,7 @@ class VendorListView(ListView):
     model = Vendor
     template_name = 'user/vendor_list.html'
     context_object_name = 'vendors'
+    paginate_by = 10
     
 class VendorCreateView(CreateView):
     model = Vendor
