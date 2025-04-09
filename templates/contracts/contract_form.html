@@ -1,10 +1,8 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
-{% load static%}
+{% load static %}
 
 <link rel="stylesheet" href="{% static 'css/app-custom.css' %}">
-
-
 
 {% block content %}
 <a class="btn btn-success-outline" href="{% url 'contracts:contract_list' %}">
@@ -31,16 +29,20 @@
                                 {{ form.expiry_date|as_crispy_field }}
                             </div>
 
-                            <!-- Original file field (without spacing) -->
                             <div id="contract-file-fields-container">
-                                <div class="form-group" id="file-field-1">
+                                <div class="form-group d-flex align-items-center gap-2" id="file-field-1">
                                     {{ form.file|as_crispy_field }}
                                 </div>
                             </div>
 
                             <div class="form-group d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary" onclick="addMoreFields()">Add more</button>
-                                <button type="submit" class="btn btn-primary">Update Contract</button>
+                                <button type="button" class="btn btn-secondary" id="add-more-btn" onclick="handleAddMore()">Add more</button>
+                                <button type="submit" class="btn btn-primary">Upload Contract</button>
+                            </div>
+
+                            <!-- Feedback message -->
+                            <div id="file-warning" class="text-danger mt-2" style="display: none;">
+                                Please upload a file before adding more fields.
                             </div>
                         </form>
                     </div>
@@ -51,59 +53,57 @@
 </div>
 
 <script>
-    // Function to create a new file input field with a remove button
-    function createFileInput(name, labelText, fieldId) {
-        const div = document.createElement('div');
-        div.classList.add('form-group', 'additional-file-field'); // Add a class for spacing on dynamically added fields
-        div.id = fieldId;
+    let fieldCount = 1;
 
-        const removeButton = document.createElement('button');
-        removeButton.type = 'button';
-        removeButton.classList.add('btn', 'btn-danger', 'remove-file-field', 'remove-btn');
-        removeButton.innerText = 'Remove'; // Changed to 'Remove' text
-        removeButton.onclick = function() {
-            removeField(fieldId);
-        };
+    const firstFileInput = document.querySelector("#file-field-1 input[type='file']");
+    const addMoreBtn = document.getElementById("add-more-btn");
+    const warningMsg = document.getElementById("file-warning");
 
-        const label = document.createElement('label');
-        label.innerText = labelText;
+    // Enable button only when first file is selected
+    firstFileInput.addEventListener("change", function () {
+        if (firstFileInput.files.length > 0) {
+            addMoreBtn.disabled = false;
+            warningMsg.style.display = "none";
+        } else {
+            addMoreBtn.disabled = true;
+        }
+    });
 
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.name = name;
-        input.classList.add('form-control');
-
-        div.appendChild(removeButton); // Place the remove button at the top
-        div.appendChild(label);
-        div.appendChild(input);
-
-        return div;
-    }
-
-    // Function to add more file fields dynamically
-    function addMoreFields() {
-        const container = document.getElementById('contract-file-fields-container');
-        const currentFields = container.querySelectorAll('.form-group');
-        
-        // Check if the last field has a selected file before adding more
-        const lastFileInput = currentFields[currentFields.length - 1].querySelector('input[type="file"]');
-        if (!lastFileInput.files.length) {
-            alert("Please select a file before adding more.");
+    function handleAddMore() {
+        if (firstFileInput.files.length === 0) {
+            warningMsg.style.display = "block";
             return;
         }
 
-        const newFieldId = `file-field-${currentFields.length + 1}`;
-        const newField = createFileInput('file', 'Upload Another File', newFieldId);
-        container.appendChild(newField);
+        warningMsg.style.display = "none";
+        addMoreFields();
     }
 
-    // Function to remove a file input field
-    function removeField(fieldId) {
-        const fieldToRemove = document.getElementById(fieldId);
-        if (fieldToRemove) {
-            fieldToRemove.remove();
-        }
+    function addMoreFields() {
+        fieldCount++;
+        const container = document.getElementById("contract-file-fields-container");
+
+        const newDiv = document.createElement("div");
+        newDiv.classList.add("form-group", "d-flex", "align-items-center", "gap-2", "margin-bottom-2");
+        newDiv.id = `file-field-${fieldCount}`;
+
+        const input = document.createElement("input");
+        input.type = "file";
+        input.name = `file_${fieldCount}`;
+        input.classList.add("form-control");
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.classList.add("btn", "btn-danger", "btn-sm");
+        removeBtn.innerText = "Remove";
+        removeBtn.onclick = function () {
+            container.removeChild(newDiv);
+        };
+
+        newDiv.appendChild(input);
+        newDiv.appendChild(removeBtn);
+
+        container.appendChild(newDiv);
     }
 </script>
-
-{% endblock content %}
+{% endblock %}

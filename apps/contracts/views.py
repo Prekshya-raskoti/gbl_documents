@@ -51,7 +51,7 @@ class ContractCreateView(CreateView):
 class ContractUpdateView(UpdateView):
     model = Contract
     form_class = ContractForm
-    template_name = 'contracts/contract_form.html'
+    template_name = 'contracts/edit_contract.html'
     success_url = reverse_lazy('contracts:contract_list')
 
     def form_valid(self, form):
