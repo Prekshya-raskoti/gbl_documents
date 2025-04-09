@@ -15,7 +15,6 @@ class DocumentListView(ListView):
     def get_queryset(self):
         return Vendor.objects.filter(documents__isnull=False).distinct()
         
-
 class DocumentCreateView(CreateView):
     model = Document
     form_class = DocumentForm
@@ -83,7 +82,12 @@ class DocumentUpdateView(UpdateView):
     model = Document
     form_class = DocumentForm
     template_name = 'documents/edit_document.html' 
-    success_url = reverse_lazy('documents:document_list')
+    
+    def get_success_url(self):
+        # Redirect to the document detail page of the vendor
+        document = self.get_object()
+        vendor = document.vendor
+        return reverse('documents:document_detail', kwargs={'pk': vendor.pk})  # Placeholder, will be set in form_valid
 
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -104,3 +108,4 @@ class DocumentDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['documents'] = Document.objects.filter(vendor=self.object)
         return context
+    
