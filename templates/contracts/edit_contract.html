@@ -45,4 +45,59 @@
         </div>
     </div>
 </div>
+
+<script>
+    let fieldCount = 1;
+
+    const firstFileInput = document.querySelector("#file-field-1 input[type='file']");
+    const addMoreBtn = document.getElementById("add-more-btn");
+    const warningMsg = document.getElementById("file-warning");
+
+    // Enable button only when first file is selected
+    firstFileInput.addEventListener("change", function () {
+        if (firstFileInput.files.length > 0) {
+            addMoreBtn.disabled = false;
+            warningMsg.style.display = "none";
+        } else {
+            addMoreBtn.disabled = true;
+        }
+    });
+
+    function handleAddMore() {
+        if (firstFileInput.files.length === 0) {
+            warningMsg.style.display = "block";
+            return;
+        }
+
+        warningMsg.style.display = "none";
+        addMoreFields();
+    }
+
+    function addMoreFields() {
+        fieldCount++;
+        const container = document.getElementById("contract-file-fields-container");
+
+        const newDiv = document.createElement("div");
+        newDiv.classList.add("form-group", "d-flex", "align-items-center", "gap-2", "margin-bottom-2");
+        newDiv.id = `file-field-${fieldCount}`;
+
+        const input = document.createElement("input");
+        input.type = "file";
+        input.name = `file_${fieldCount}`;
+        input.classList.add("form-control");
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.classList.add("btn", "btn-danger", "btn-sm");
+        removeBtn.innerText = "Remove";
+        removeBtn.onclick = function () {
+            container.removeChild(newDiv);
+        };
+
+        newDiv.appendChild(input);
+        newDiv.appendChild(removeBtn);
+
+        container.appendChild(newDiv);
+    }
+</script>
 {% endblock content %}
