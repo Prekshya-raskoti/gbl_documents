@@ -1,28 +1,18 @@
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect ,render
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 from .models import Vendor
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import render
 from .forms import VendorForm
 from django.views import View
-
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import login
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.views import View
-from django.urls import reverse
-
 class LoginView(View):
-    template_name = 'auth/login.html'
+    template_name = 'auth/login.html' 
     
     def get(self, request):
         if request.user.is_authenticated:
-            return self.redirect_authenticated_user(request.user)
-        
+            return self.redirect_authenticated_user(request.user)  
         form = AuthenticationForm()
         return render(request, self.template_name, {'form': form})
     
@@ -40,7 +30,6 @@ class LoginView(View):
             
             return self.redirect_authenticated_user(user)
         else:
-            messages.error(request, "Invalid username or password")
             return render(request, self.template_name, {'form': form})
     
     def redirect_authenticated_user(self, user):
