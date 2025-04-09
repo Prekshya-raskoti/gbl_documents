@@ -14,26 +14,29 @@
                         <form method="POST" enctype="multipart/form-data" id="document-form">
                             {% csrf_token %}
 
-                            <!-- Render the vendor field -->
                             {{ form.vendor|as_crispy_field }}
 
-                            <!-- Documents heading -->
                             <h3 class="mt-3">Documents</h3>
 
-                            <!-- Container to hold multiple document sections -->
                             <div id="document-fields-container">
-                                <div class="document-fields">
-                                    {{ form.document_type|as_crispy_field }}
-                                    <div class="file-wrapper">
-                                        {{ form.file|as_crispy_field }}
+                                <div class="document-fields d-flex align-items-start gap-2 mb-2" id="document-field-1">
+                                    <div class="flex-grow-1">
+                                        {{ form.document_type|as_crispy_field }}
+                                        <div class="file-wrapper">
+                                            {{ form.file|as_crispy_field }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Buttons -->
                             <div class="form-group d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary" onclick="addMoreFields()">Add more</button>
+                                <button type="button" class="btn btn-secondary" id="add-more-btn" onclick="handleAddMore()">Add more</button>
                                 <button type="submit" class="btn btn-primary">Upload Document</button>
+                            </div>
+
+                            <!-- Warning message -->
+                            <div id="file-warning" class="text-danger mt-2" style="display: none;">
+                                Please upload a file before adding more fields.
                             </div>
                         </form>
                     </div>
@@ -43,69 +46,104 @@
     </div>
 </div>
 
-<!-- Scripts -->
 <script>
-    function createFileInput(name, labelText) {
-        const div = document.createElement('div');
-        div.classList.add('form-group');
+    let fieldCount = 1;     
+    const warningMsg = document.getElementById("file-warning");
+    const firstFileInput = document.querySelector("#document-field-1 input[type='file']");
+    const firstDocType = document.querySelector("#document-field-1 select");
 
-        const label = document.createElement('label');
-        label.innerText = labelText;
+    // Initial event bindings
+    firstFileInput.addEventListener("change", () => {
+        if (firstFileInput.files.length > 0) warningMsg.style.display = "none";
+    });
 
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.name = name;
-        input.classList.add('form-control');
+    firstDocType.addEventListener("change", (e) => handleDocTypeChange(e.target));
 
-        div.appendChild(label);
-        div.appendChild(input);
-        return div;
+    function handleAddMore() {
+        if (firstFileInput.files.length === 0) {
+            warningMsg.style.display = "block";
+            return;
+        }
+        warningMsg.style.display = "none";
+        addMoreFields();
+    }
+
+    function handleDocTypeChange(selectElem) {
+        const wrapper = selectElem.closest(".document-fields");
+        const existingFiles = wrapper.querySelectorAll(".dynamic-file-field");
+        const fileWrapper = wrapper.querySelector(".file-wrapper")
+        existingFiles.forEach(el => el.remove()); // Remove previous file inputs if any
+
+        if (selectElem.value === "citizenship") {
+            // Add Front side
+            const frontInput = document.createElement("input");
+            frontInput.type = "file";
+            frontInput.name = `${selectElem.name}_front`;
+            frontInput.required = true;
+            frontInput.placeholder = "Front Side";
+            frontInput.classList.add("form-control", "dynamic-file-field", "mt-2");
+            frontInput.title = "Front Side";
+
+            // Add Back side
+            const backInput = document.createElement("input");
+            backInput.type = "file";
+            backInput.name = `${selectElem.name}_back`;
+            backInput.required = true;
+            backInput.placeholder = "Back Side";
+            backInput.classList.add("form-control", "dynamic-file-field", "mt-2");
+            backInput.title = "Back Side";
+
+            selectElem.parentElement.appendChild(frontInput);
+            selectElem.parentElement.appendChild(backInput);
+        } else {
+            const fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.name = `${selectElem.name}_file`;
+            fileInput.required = true;
+            fileInput.classList.add("form-control", "dynamic-file-field", "mt-2");
+            selectElem.parentElement.appendChild(fileInput);
+        }
     }
 
     function addMoreFields() {
-        const container = document.getElementById('document-fields-container');
-        const currentFields = container.querySelectorAll('.document-fields');
-        const lastFields = currentFields[currentFields.length - 1];
+        fieldCount++;
+        const container = document.getElementById("document-fields-container");
 
-        const documentType = lastFields.querySelector('select');
-        const fileInputs = lastFields.querySelectorAll('input[type="file"]');
+        const wrapperDiv = document.createElement("div");
+        wrapperDiv.classList.add("document-fields", "d-flex", "align-items-start", "gap-2", "mb-2");
+        wrapperDiv.id = `document-field-${fieldCount}`;
 
-        if (!documentType.value || Array.from(fileInputs).some(input => !input.files.length)) {
-            alert("Please fill in the current fields before adding more.");
-            return;
-        }
+        const innerDiv = document.createElement("div");
+        innerDiv.classList.add("flex-grow-1");
 
-        const newFields = lastFields.cloneNode(true);
+        // Document type select
+        const docType = document.createElement("select");
+        docType.name = `document_type_${fieldCount}`;
+        docType.classList.add("form-control", "mb-2");
+        docType.innerHTML = `
+            <option value="">Select document type</option>
+            <option value="citizenship">Citizenship</option>
+            <option value="pan">PAN</option>
+            <option value="bank">Bank Details</option>
+            <option value="other">Other</option>
+        `;
+        docType.addEventListener("change", (e) => handleDocTypeChange(e.target));
 
-        // Reset select and file fields
-        newFields.querySelector('select').value = '';
-        const fileWrapper = newFields.querySelector('.file-wrapper');
-        fileWrapper.innerHTML = '';
-        fileWrapper.appendChild(createFileInput('file', 'Upload Document'));
+        innerDiv.appendChild(docType);
 
-        container.appendChild(newFields);
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.classList.add("btn", "btn-danger", "btn-sm", "mt-2");
+        removeBtn.textContent = "Remove";
+        removeBtn.onclick = function () {
+            container.removeChild(wrapperDiv);
+        };
+
+        wrapperDiv.appendChild(innerDiv);
+        wrapperDiv.appendChild(removeBtn);
+        container.appendChild(wrapperDiv);
     }
-
-    // Handle citizenship selection dynamically
-    document.addEventListener('change', function (e) {
-        if (e.target.matches('select')) {
-            const wrapper = e.target.closest('.document-fields');
-            const fileWrapper = wrapper.querySelector('.file-wrapper');
-            
-            if (e.target.value.toLowerCase() === 'citizenship') {
-                fileWrapper.innerHTML = '';
-                fileWrapper.appendChild(createFileInput('file', 'Upload Front Side'));
-                fileWrapper.appendChild(createFileInput('file', 'Upload Back Side'));
-            
-            }
-        }
-    });
-
-    // Pre-trigger change event on load (for edit scenarios)
-    window.addEventListener('load', function () {
-        document.querySelectorAll('select').forEach(select => {
-            select.dispatchEvent(new Event('change'));
-        });
-    });
 </script>
+
+
 {% endblock content %}

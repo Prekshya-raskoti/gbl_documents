@@ -38,7 +38,7 @@ class DocumentDeleteView(DeleteView):
 class DocumentUpdateView(UpdateView):
     model = Document
     form_class = DocumentForm
-    template_name = 'documents/document_form.html'  # same form template as create
+    template_name = 'documents/edit_document.html'  # same form template as create
     success_url = reverse_lazy('documents:document_list')
 
     def form_valid(self, form):
