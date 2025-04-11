@@ -28,8 +28,10 @@ class Vendor(models.Model):
     
     def clean(self):
         super().clean()
+        number = self.phone.replace(' ', '').replace('+977', '')
+
         pattern = r'^\d{10}$'
-        if not re.match(pattern, self.phone):
-            raise ValidationError({
-                'phone': "Phone number must  exactly 10 digits."
-            })
+        if not re.match(pattern, number):
+            raise ValidationError({'phone': "Phone number must be exactly 10 digits."})
+
+        self.phone = f'+977{number}'

@@ -69,9 +69,9 @@
     <div class="button-group">
         <form method="post" class="d-inline">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">OK</button>
+            <button type="submit" class="btn btn-primary">OK</button>
         </form>
-        <a href="{% url 'user:user_vendor_list' %}" class="btn btn-secondary">Cancel</a>
+        <a href="{% url 'user:user_vendor_list' %}" class="btn btn-danger">Cancel</a>
     </div>
 </div>
 {% endblock content %}
