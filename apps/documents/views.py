@@ -4,12 +4,35 @@ from django.urls import reverse_lazy
 from django.http import JsonResponse
 from .models import Document
 from .forms import DocumentForm
+from django.db.models import Q
+
 
 class DocumentListView(ListView):
     model = Document
     template_name = 'documents/document_list.html'
     context_object_name = 'documents'
-    paginate_by = 10 # Number of documents per page
+    paginate_by = 10 
+
+    def get_queryset(self):
+        query = self.request.GET.get('q', '')
+        doc_type = self.request.GET.get('type', '')
+
+        qs = Document.objects.all()
+
+        if query:
+            qs = qs.filter(
+                Q(vendor__name__icontains=query)
+            )
+
+        if doc_type:
+            qs = qs.filter(document_type=doc_type)
+
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['document_types'] = Document.DOCUMENT_TYPES
+        return context
 
 class DocumentCreateView(CreateView):
     model = Document
