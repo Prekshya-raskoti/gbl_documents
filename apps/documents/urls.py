@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import DocumentListView, DocumentCreateView, DocumentDeleteView, DocumentUpdateView, DocumentDetailView
+from .views import DocumentListView, DocumentCreateView, DocumentDeleteView, DocumentUpdateView, DocumentDetailView, VendorDocumentManageView
 
 app_name = 'documents'
 
@@ -9,6 +9,8 @@ urlpatterns = [
     path('edit/<int:pk>/', DocumentUpdateView.as_view(), name='document_edit'),
     path('view/<int:pk>/', DocumentDetailView.as_view(), name='document_detail'),
     path('delete/<int:pk>/', DocumentDeleteView.as_view(), name='document_delete'),
+    path('vendor/<int:pk>/manage/', VendorDocumentManageView.as_view(), name='vendor_document_manage'),
+
 
 
 ]

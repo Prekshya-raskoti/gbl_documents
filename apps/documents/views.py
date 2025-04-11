@@ -1,6 +1,6 @@
 from django.contrib import messages
-from django.shortcuts import redirect
-from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView
+from django.shortcuts import get_object_or_404, redirect
+from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView, TemplateView
 from django.urls import reverse, reverse_lazy
 from django.http import JsonResponse
 from apps.user.models import Vendor
@@ -108,4 +108,46 @@ class DocumentDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['documents'] = Document.objects.filter(vendor=self.object)
         return context
-    
+
+class VendorDocumentManageView(TemplateView):
+    template_name = 'documents/vendor_document_manage.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Get the vendor using the pk from the URL
+        vendor_pk = self.kwargs.get('pk')
+        vendor = get_object_or_404(Vendor, pk=vendor_pk)
+        # Get all documents of the vendor
+        context['vendor'] = vendor
+        context['vendor_documents'] = Document.objects.filter(vendor=vendor)
+        context['form'] = DocumentForm()  # Form for adding/updating documents
+        context['document_type_choices'] = Document.DOCUMENT_TYPES  # Add this line
+        return context
+
+    def post(self, request, *args, **kwargs):
+        vendor_pk = self.kwargs.get('pk')
+        vendor = get_object_or_404(Vendor, pk=vendor_pk)
+
+        # Handle adding or updating documents
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            document_id = request.POST.get('document_id')  # Check if updating an existing document
+            if document_id:
+                # Update existing document
+                document = get_object_or_404(Document, id=document_id, vendor=vendor)
+                document.file = form.cleaned_data['file']
+                document.document_type = form.cleaned_data['document_type']
+                document.save()
+                messages.success(request, "Document updated successfully!")
+            else:
+                # Add new document
+                Document.objects.create(
+                    vendor=vendor,
+                    file=form.cleaned_data['file'],
+                    document_type=form.cleaned_data['document_type']
+                )
+                messages.success(request, "Document added successfully!")
+        else:
+            messages.error(request, "There was an error with the form. Please try again.")
+
+        return redirect(reverse('documents:vendor_document_manage', kwargs={'pk': vendor.pk}))
