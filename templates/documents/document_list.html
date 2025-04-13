@@ -42,7 +42,7 @@
     <tbody>
         {% for document in documents %}
         <tr>
-            <td>{{ forloop.counter }}</td> 
+            <td>{{ forloop.counter|add:page_obj.start_index|add:"-1"}}</td> 
             <td>{{ document.vendor.name }}</td>
             <td>{{ document.get_document_type_display }}</td>
             <td>{{ document.uploaded_at|localtime }}</td>

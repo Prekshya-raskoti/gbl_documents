@@ -34,4 +34,4 @@ class Vendor(models.Model):
         if not re.match(pattern, number):
             raise ValidationError({'phone': "Phone number must be exactly 10 digits."})
 
-        self.phone = f'+977{number}'
+        self.phone = f'+977 {number}'

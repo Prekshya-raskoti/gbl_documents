@@ -26,7 +26,7 @@
                     <span class= "span-blue">Documents</span> 
                   </h3>
             </div>
-            
+           
             <div class="user-profile-section">
                 <div class="profile-circle">
                     {{ user.username|slice:":1"|upper }}
@@ -36,7 +36,7 @@
                     <span class="user-role">{% if user.is_superuser %}{% else %}User{% endif %}</span>
                 </div>
                 <hr>
-            </div>
+            </div> 
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link text-white {% if '/vendor' in current_path or 'user_vendor_list' in current_path %}active{% endif %}" 

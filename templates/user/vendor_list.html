@@ -38,7 +38,7 @@
     <tbody>
         {% for vendor in vendors %}
             <tr>
-                <td>{{ forloop.counter }}</td> 
+                <td>{{ forloop.counter|add:page_obj.start_index|add:"-1" }}</td> 
                 <td>{{ vendor.name }}</td>
                 <td>{{ vendor.email }}</td>
                 <td>{{ vendor.address }}</td>
