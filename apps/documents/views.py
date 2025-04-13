@@ -17,7 +17,7 @@ class DocumentListView(ListView):
         query = self.request.GET.get('q', '')
         doc_type = self.request.GET.get('type', '')
 
-        qs = Document.objects.all()
+        qs = Document.objects.all().order_by('id')
 
         if query:
             qs = qs.filter(
