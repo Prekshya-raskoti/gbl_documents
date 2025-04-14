@@ -72,11 +72,9 @@ class DocumentDeleteView(DeleteView):
         vendor = document.vendor
         return reverse('documents:vendor_document_manage', kwargs={'pk': vendor.pk})
     
-    def delete(self, request, *args, **kwargs):
-        document = self.get_object()
-        document.delete()
-        messages.success(request, "Document has been successfully deleted!")
-        return JsonResponse({'success': True})
+    def post(self, request, *args, **kwargs):
+        messages.success(self.request, "Vendor has been successfully deleted!")
+        return super().post(request, *args, **kwargs)
 
 
 class DocumentUpdateView(UpdateView):
