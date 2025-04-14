@@ -69,7 +69,7 @@ class DocumentDeleteView(DeleteView):
         # Redirect to the document detail page of the vendor
         document = self.get_object()
         vendor = document.vendor
-        return reverse('documents:document_detail', kwargs={'pk': vendor.pk})
+        return reverse('documents:vendor_document_manage', kwargs={'pk': vendor.pk})
     
     def delete(self, request, *args, **kwargs):
         document = self.get_object()
