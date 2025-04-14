@@ -118,7 +118,7 @@ class VendorDocumentManageView(TemplateView):
         vendor = get_object_or_404(Vendor, pk=vendor_pk)
         # Get all documents of the vendor
         context['vendor'] = vendor
-        context['vendor_documents'] = Document.objects.filter(vendor=vendor)
+        context['vendor_documents'] = Document.objects.filter(vendor=vendor).order_by('uploaded_at')
         context['form'] = DocumentForm()  # Form for adding/updating documents
         context['document_type_choices'] = Document.DOCUMENT_TYPES  # Add this line
         return context
@@ -127,30 +127,38 @@ class VendorDocumentManageView(TemplateView):
         vendor_pk = self.kwargs.get('pk')
         vendor = get_object_or_404(Vendor, pk=vendor_pk)
 
-        # Handle adding or updating documents
-        form = DocumentForm(request.POST, request.FILES)
-        if form.is_valid():
-            document_id = request.POST.get('document_id')  # Check if updating an existing document
-            if document_id:
-                # Update existing document
-                document = get_object_or_404(Document, id=document_id, vendor=vendor)
-                document.file = form.cleaned_data['file']
-                document.document_type = form.cleaned_data['document_type']
-                document.save()
+        document_id = request.POST.get('document_id')
+        print(f"Document ID: {document_id}")
+
+        if document_id:
+            # Update existing document
+            document = get_object_or_404(Document, pk=document_id, vendor=vendor)
+            form = DocumentForm(request.POST, request.FILES, instance=document)
+
+            if form.is_valid():
+                form.save()
                 messages.success(request, "Document updated successfully!")
             else:
-                # Add new document
-                Document.objects.create(
-                    vendor=vendor,
-                    file=form.cleaned_data['file'],
-                    document_type=form.cleaned_data['document_type']
-                )
-                messages.success(request, "Document added successfully!")
+                print(form.errors)
+                messages.error(request, "Error updating the document.")
         else:
-            messages.error(request, "There was an error with the form. Please try again.")
+
+        # Handle adding or updating documents
+            form = DocumentForm(request.POST, request.FILES)
+            if form.is_valid():
+                    Document.objects.create(
+                        vendor=vendor,
+                        file=form.cleaned_data['file'],
+                        document_type=form.cleaned_data['document_type']
+                    )
+                    messages.success(request, "Document added successfully!")
+            else:
+                messages.error(request, "There was an error with the form. Please try again.")
 
         return redirect(reverse('documents:vendor_document_manage', kwargs={'pk': vendor.pk}))
     
+    
+  
 
 class VendorDocumentDeleteView(View):
     def post(self, request, pk):
