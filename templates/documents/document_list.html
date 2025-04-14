@@ -29,21 +29,18 @@
             <td>{{ vendor.name }}</td>
 
             <td>
-                <a href="{% url 'documents:document_detail' vendor.pk %}" class="btn btn-secondary btn-sm">
-                    <i class="fa fa-eye"></i>
+                <a href="{% url 'documents:vendor_document_manage' vendor.pk %}" class="btn btn-warning btn-sm">
+                    Manage Documents
 
                 </a>
                 
-                <a href="{% url 'documents:vendor_document_manage' vendor.pk %}" class="btn btn-warning btn-sm">
-                    <i class="fa fa-edit"></i>
-                </a>
-                
-                <form method="POST" action="{% url 'documents:document_delete' vendor.pk %}" style="display:inline;">
+                <form method="POST" action="{% url 'documents:vendor_document_delete' vendor.pk %}" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
                         <i class="fa fa-trash"></i>
                     </button>
                 </form>
+                
             </td>
         </tr>
         {% endfor %}

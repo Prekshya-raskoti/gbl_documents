@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
+from django.views import View
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView, TemplateView
 from django.urls import reverse, reverse_lazy
 from django.http import JsonResponse
@@ -151,3 +152,18 @@ class VendorDocumentManageView(TemplateView):
             messages.error(request, "There was an error with the form. Please try again.")
 
         return redirect(reverse('documents:vendor_document_manage', kwargs={'pk': vendor.pk}))
+    
+
+class VendorDocumentDeleteView(View):
+    def post(self, request, pk):
+        vendor = get_object_or_404(Vendor, pk=pk)
+        documents = Document.objects.filter(vendor=vendor)
+
+        if documents.exists():
+            count = documents.count()
+            documents.delete()
+            messages.success(request, f"Documents have been successfully deleted for vendor: {vendor.name}.")
+        else:
+            messages.info(request, f"No documents found for vendor: {vendor.name}.")
+
+        return redirect('documents:document_list') 

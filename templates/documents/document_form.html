@@ -2,11 +2,12 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<a class="btn btn-success-outline" href="{% url 'documents:document_list' %}">
+
+<a class="btn btn-outline-dark" href="{% url 'documents:document_list' %}">
     <i class="fa fa-angle-left"></i> Back
 </a>
 
-<div class="card card-default p-10">
+<div class="card card-default p-10 mt-3">
     <div class="card-body">
         <div class="body-block">
             <section class="section">
@@ -39,7 +40,7 @@
 
                             <!-- Warning message -->
                             <div id="file-warning" class="text-danger mt-2" style="display: none;">
-                                Please upload a file before adding more fields.
+                                Please upload files for all existing fields before adding more.
                             </div>
                         </form>
                     </div>
@@ -51,7 +52,7 @@
 
 <script>
     let fieldCount = 1;
-    const documentTypesAdded = new Set(); // Track added types
+    const documentTypesAdded = new Set();
     const firstDocTypeSelect = document.querySelector("select[name='document_type']");
     const firstFileInput = document.querySelector("#document-field-1 input[type='file']");
     const addMoreBtn = document.getElementById("add-more-btn");
@@ -63,7 +64,6 @@
             documentTypesAdded.add(firstDocTypeSelect.value);
         }
 
-        // Prevent duplicate selection on first select
         firstDocTypeSelect.addEventListener("change", function () {
             const value = this.value;
             if (documentTypesAdded.has(value)) {
@@ -75,7 +75,7 @@
         });
     });
 
-    // Enable Add More button if a file is selected
+    // Validate file upload for first input
     firstFileInput.addEventListener("change", function () {
         if (firstFileInput.files.length > 0) {
             warningMsg.style.display = "none";
@@ -83,10 +83,18 @@
     });
 
     function handleAddMore() {
-        const firstFileUploaded = firstFileInput.files.length > 0;
+        const allFileInputs = document.querySelectorAll("input[type='file']");
+        let allFilesUploaded = true;
 
-        if (!firstFileUploaded) {
+        allFileInputs.forEach(input => {
+            if (input.files.length === 0) {
+                allFilesUploaded = false;
+            }
+        });
+
+        if (!allFilesUploaded) {
             warningMsg.style.display = "block";
+            warningMsg.textContent = "Please upload files for all existing fields before adding more.";
             return;
         }
 
@@ -116,7 +124,6 @@
             <option value="other">Other</option>
         `;
 
-        // Prevent duplicate selection
         docTypeSelect.addEventListener("change", function () {
             const value = this.value;
             if (documentTypesAdded.has(value)) {
@@ -145,7 +152,7 @@
         removeBtn.classList.add("btn", "btn-danger", "btn-sm", "mt-2");
         removeBtn.innerText = "Remove";
         removeBtn.onclick = function () {
-            documentTypesAdded.delete(docTypeSelect.value); // Remove from Set
+            documentTypesAdded.delete(docTypeSelect.value);
             container.removeChild(wrapperDiv);
         };
 
@@ -154,7 +161,6 @@
         container.appendChild(wrapperDiv);
     }
 
-    // Final validation before submission
     document.getElementById("document-form").addEventListener("submit", function (e) {
         const selects = document.querySelectorAll("select[name^='document_type']");
         const selectedTypes = new Set();
@@ -173,9 +179,25 @@
             }
         });
 
-        if (hasDuplicate) {
+        const fileInputs = document.querySelectorAll("input[type='file']");
+        let missingFile = false;
+
+        fileInputs.forEach(input => {
+            if (input.files.length === 0) {
+                missingFile = true;
+                input.classList.add("is-invalid");
+            } else {
+                input.classList.remove("is-invalid");
+            }
+        });
+
+        if (hasDuplicate || missingFile) {
             e.preventDefault();
-            alert("You cannot upload multiple documents with the same type.");
+            if (hasDuplicate) {
+                alert("You cannot upload multiple documents with the same type.");
+            } else if (missingFile) {
+                alert("Please ensure all document fields have files uploaded.");
+            }
         }
     });
 </script>
