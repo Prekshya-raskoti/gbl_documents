@@ -7,14 +7,31 @@ from django.http import JsonResponse
 from apps.user.models import Vendor
 from .models import Document
 from .forms import DocumentForm
+from django.db.models import Q
+
 
 class DocumentListView(ListView):
     model = Vendor
     template_name = 'documents/document_list.html'
     context_object_name = 'vendors'
+    paginate_by = 10 
 
     def get_queryset(self):
-        return Vendor.objects.filter(documents__isnull=False).distinct()
+        query = self.request.GET.get('q', '')
+
+        qs = Vendor.objects.filter(documents__isnull=False).distinct().order_by('id')
+
+        if query:
+            qs = qs.filter(
+                Q(name__icontains=query)
+            )
+
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['document_types'] = Document.DOCUMENT_TYPES
+        return context
         
 class DocumentCreateView(CreateView):
     model = Document
