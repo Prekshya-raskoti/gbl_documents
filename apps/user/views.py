@@ -61,7 +61,6 @@ class VendorListView(ListView):
         from_date = self.request.GET.get('from_date')
         to_date = self.request.GET.get('to_date')
 
-        # queryset = Vendor.objects.all()
         queryset = Vendor.objects.all().order_by('id')
 
 
@@ -107,8 +106,11 @@ class VendorUpdateView(UpdateView):
         return response
 class VendorDeleteView(DeleteView):
     model = Vendor
+    template_name = 'user/delete_vendor.html'
     success_url = reverse_lazy('user:user_vendor_list')
 
     def post(self, request, *args, **kwargs):
         messages.success(self.request, "Vendor has been successfully deleted!")
         return super().post(request, *args, **kwargs)
+    
+    
