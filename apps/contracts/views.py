@@ -39,14 +39,44 @@ class ContractCreateView(CreateView):
     template_name = 'contracts/contract_form.html'
     success_url = reverse_lazy('contracts:contract_list')
 
-    def form_valid(self, form):
-        form.instance.created_by = self.request.user
-        messages.success(self.request, "Contract has been successfully created.")
-        return super().form_valid(form)
+    def post(self, request, *args, **kwargs):
+        vendor = request.POST.get('vendor')
+        join_date = request.POST.get('join_date')
+        expiry_date = request.POST.get('expiry_date')
+        terms = request.POST.get('terms')
 
-    def form_invalid(self, form):
-        messages.error(self.request, "There was an error with the form submission.")
-        return super().form_invalid(form)
+        if not vendor or not join_date or not expiry_date:
+            messages.error(request, "All fields are required.")
+            return self.form_invalid(self.get_form())
+
+        created_contracts = []
+        counter = 1
+
+        while True:
+            file_key = f'file_{counter}' if counter > 1 else 'file'
+            contract_file = request.FILES.get(file_key)
+
+            if not contract_file:
+                break
+
+            Contract.objects.create(
+                vendor_id=vendor,
+                join_date=join_date,
+                expiry_date=expiry_date,
+                file=contract_file,
+                created_by=request.user
+            )
+
+            created_contracts.append(contract_file)
+            counter += 1
+
+        if created_contracts:
+            messages.success(request, "Contracts have been successfully uploaded!")
+            return redirect(self.success_url)
+        else:
+            messages.error(request, "Please upload at least one contract file.")
+            return self.form_invalid(self.get_form())
+
 
 class ContractUpdateView(UpdateView):
     model = Contract

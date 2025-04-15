@@ -31,9 +31,10 @@
 
                             <div id="contract-file-fields-container">
                                 <div class="form-group d-flex align-items-center gap-2" id="file-field-1">
-                                    {{ form.file|as_crispy_field }}
+                                    <input type="file" name="file" class="form-control" required>
                                 </div>
                             </div>
+                            
 
                             <div class="form-group d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary" id="add-more-btn" onclick="handleAddMore()">Add more</button>
