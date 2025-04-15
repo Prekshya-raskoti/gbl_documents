@@ -2,10 +2,12 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<a class="btn btn-success-outline" href="{% url 'documents:document_list' %}">
+
+<a class="btn btn-outline-dark" href="{% url 'documents:document_list' %}">
     <i class="fa fa-angle-left"></i> Back
 </a>
-<div class="card card-default p-10">
+
+<div class="card card-default p-10 mt-3">
     <div class="card-body">
         <div class="body-block">
             <section class="section">
@@ -14,26 +16,31 @@
                         <form method="POST" enctype="multipart/form-data" id="document-form">
                             {% csrf_token %}
 
-                            <!-- Render the vendor field -->
+                            <!-- Vendor field -->
                             {{ form.vendor|as_crispy_field }}
 
-                            <!-- Documents heading -->
                             <h3 class="mt-3">Documents</h3>
 
-                            <!-- Container to hold multiple document sections -->
                             <div id="document-fields-container">
-                                <div class="document-fields">
-                                    {{ form.document_type|as_crispy_field }}
-                                    <div class="file-wrapper">
-                                        {{ form.file|as_crispy_field }}
+                                <div class="document-fields d-flex align-items-start gap-2 mb-2" id="document-field-1">
+                                    <div class="flex-grow-1">
+                                        {{ form.document_type|as_crispy_field }}
+                                        <div class="file-wrapper">
+                                            {{ form.file|as_crispy_field }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Buttons -->
                             <div class="form-group d-flex justify-content-between mt-4">
-                                <button type="button" class="btn btn-secondary" onclick="addMoreFields()">Add more</button>
-                                <button type="submit" class="btn btn-primary">Update Document</button>
+                                <button type="button" class="btn btn-secondary" id="add-more-btn" onclick="handleAddMore()">Add more</button>
+                                <button type="submit" class="btn btn-primary">Upload Document</button>
+                            </div>
+
+                            <!-- Warning message -->
+                            <div id="file-warning" class="text-danger mt-2" style="display: none;">
+                                Please upload files for all existing fields before adding more.
                             </div>
                         </form>
                     </div>
@@ -43,69 +50,156 @@
     </div>
 </div>
 
-<!-- Scripts -->
 <script>
-    function createFileInput(name, labelText) {
-        const div = document.createElement('div');
-        div.classList.add('form-group');
+    let fieldCount = 1;
+    const documentTypesAdded = new Set();
+    const firstDocTypeSelect = document.querySelector("select[name='document_type']");
+    const firstFileInput = document.querySelector("#document-field-1 input[type='file']");
+    const addMoreBtn = document.getElementById("add-more-btn");
+    const warningMsg = document.getElementById("file-warning");
 
-        const label = document.createElement('label');
-        label.innerText = labelText;
+    // Initialize the first select if pre-selected
+    document.addEventListener("DOMContentLoaded", function () {
+        if (firstDocTypeSelect && firstDocTypeSelect.value) {
+            documentTypesAdded.add(firstDocTypeSelect.value);
+        }
 
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.name = name;
-        input.classList.add('form-control');
+        firstDocTypeSelect.addEventListener("change", function () {
+            const value = this.value;
+            if (documentTypesAdded.has(value)) {
+                alert("This document type has already been added.");
+                this.value = "";
+            } else {
+                documentTypesAdded.add(value);
+            }
+        });
+    });
 
-        div.appendChild(label);
-        div.appendChild(input);
-        return div;
-    }
+    // Validate file upload for first input
+    firstFileInput.addEventListener("change", function () {
+        if (firstFileInput.files.length > 0) {
+            warningMsg.style.display = "none";
+        }
+    });
 
-    function addMoreFields() {
-        const container = document.getElementById('document-fields-container');
-        const currentFields = container.querySelectorAll('.document-fields');
-        const lastFields = currentFields[currentFields.length - 1];
+    function handleAddMore() {
+        const allFileInputs = document.querySelectorAll("input[type='file']");
+        let allFilesUploaded = true;
 
-        const documentType = lastFields.querySelector('select');
-        const fileInputs = lastFields.querySelectorAll('input[type="file"]');
+        allFileInputs.forEach(input => {
+            if (input.files.length === 0) {
+                allFilesUploaded = false;
+            }
+        });
 
-        if (!documentType.value || Array.from(fileInputs).some(input => !input.files.length)) {
-            alert("Please fill in the current fields before adding more.");
+        if (!allFilesUploaded) {
+            warningMsg.style.display = "block";
+            warningMsg.textContent = "Please upload files for all existing fields before adding more.";
             return;
         }
 
-        const newFields = lastFields.cloneNode(true);
-
-        // Reset select and file fields
-        newFields.querySelector('select').value = '';
-        const fileWrapper = newFields.querySelector('.file-wrapper');
-        fileWrapper.innerHTML = '';
-        fileWrapper.appendChild(createFileInput('file', 'Upload Document'));
-
-        container.appendChild(newFields);
+        warningMsg.style.display = "none";
+        addMoreFields();
     }
 
-    // Handle citizenship selection dynamically
-    document.addEventListener('change', function (e) {
-        if (e.target.matches('select')) {
-            const wrapper = e.target.closest('.document-fields');
-            const fileWrapper = wrapper.querySelector('.file-wrapper');
-            
-            if (e.target.value.toLowerCase() === 'citizenship') {
-                fileWrapper.innerHTML = '';
-                fileWrapper.appendChild(createFileInput('file', 'Upload Front Side'));
-                fileWrapper.appendChild(createFileInput('file', 'Upload Back Side'));
-            
+    function addMoreFields() {
+        fieldCount++;
+        const container = document.getElementById("document-fields-container");
+
+        const wrapperDiv = document.createElement("div");
+        wrapperDiv.classList.add("document-fields", "d-flex", "align-items-start", "gap-2", "mb-2");
+        wrapperDiv.id = `document-field-${fieldCount}`;
+
+        // Create select
+        const docTypeSelect = document.createElement("select");
+        docTypeSelect.name = `document_type_${fieldCount}`;
+        docTypeSelect.classList.add("form-control");
+
+        docTypeSelect.innerHTML = `
+            <option value="">Select document type</option>
+            <option value="citizenship_front">Citizenship Front</option>
+            <option value="citizenship_back">Citizenship Back</option>
+            <option value="pan_card">PAN Card</option>
+            <option value="bank_details">Bank Details</option>
+            <option value="other">Other</option>
+        `;
+
+        docTypeSelect.addEventListener("change", function () {
+            const value = this.value;
+            if (documentTypesAdded.has(value)) {
+                alert("This document type has already been added.");
+                this.value = "";
+            } else {
+                documentTypesAdded.add(value);
+            }
+        });
+
+        // File input
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.name = `file_${fieldCount}`;
+        fileInput.classList.add("form-control", "mt-2");
+
+        // Input group wrapper
+        const inputWrapper = document.createElement("div");
+        inputWrapper.classList.add("flex-grow-1");
+        inputWrapper.appendChild(docTypeSelect);
+        inputWrapper.appendChild(fileInput);
+
+        // Remove button
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.classList.add("btn", "btn-danger", "btn-sm", "mt-2");
+        removeBtn.innerText = "Remove";
+        removeBtn.onclick = function () {
+            documentTypesAdded.delete(docTypeSelect.value);
+            container.removeChild(wrapperDiv);
+        };
+
+        wrapperDiv.appendChild(inputWrapper);
+        wrapperDiv.appendChild(removeBtn);
+        container.appendChild(wrapperDiv);
+    }
+
+    document.getElementById("document-form").addEventListener("submit", function (e) {
+        const selects = document.querySelectorAll("select[name^='document_type']");
+        const selectedTypes = new Set();
+        let hasDuplicate = false;
+
+        selects.forEach(select => {
+            const val = select.value;
+            if (val) {
+                if (selectedTypes.has(val)) {
+                    hasDuplicate = true;
+                    select.classList.add("is-invalid");
+                } else {
+                    selectedTypes.add(val);
+                    select.classList.remove("is-invalid");
+                }
+            }
+        });
+
+        const fileInputs = document.querySelectorAll("input[type='file']");
+        let missingFile = false;
+
+        fileInputs.forEach(input => {
+            if (input.files.length === 0) {
+                missingFile = true;
+                input.classList.add("is-invalid");
+            } else {
+                input.classList.remove("is-invalid");
+            }
+        });
+
+        if (hasDuplicate || missingFile) {
+            e.preventDefault();
+            if (hasDuplicate) {
+                alert("You cannot upload multiple documents with the same type.");
+            } else if (missingFile) {
+                alert("Please ensure all document fields have files uploaded.");
             }
         }
     });
-
-    // Pre-trigger change event on load (for edit scenarios)
-    window.addEventListener('load', function () {
-        document.querySelectorAll('select').forEach(select => {
-            select.dispatchEvent(new Event('change'));
-        });
-    });
 </script>
+
 {% endblock content %}
