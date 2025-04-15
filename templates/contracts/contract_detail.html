@@ -29,15 +29,14 @@
         <label class="form-label"><strong>Contract File</strong></label>
         <input type="text" class="form-control mb-2" value="{{ contract.file.name|default:'No file' }}" disabled>
         {% if contract.file %}
-        <a href="{{ contract.file.url }}" target="_blank" class="btn btn-primary">View Contract</a>
+        <a href="{{ contract.file.url }}" target="_blank" class="btn btn-primary">View File</a>
         {% else %}
         <span class="text-muted">No file uploaded.</span>
         {% endif %}
+        <a href="{% url 'contracts:contract_list' %}" class="btn btn-secondary">Back to List</a>
+
     </div>
 
-    <a href="{% url 'contracts:contract_list' %}" class="btn btn-secondary">Back to List</a>
-    <a href="{% url 'contracts:contract_update' contract.pk %}" class="btn btn-warning">
-        <i class="fa fa-edit"></i> Edit
-    </a>
+    
 </form>
 {% endblock %}
