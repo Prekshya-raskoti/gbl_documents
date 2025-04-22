@@ -4,9 +4,19 @@
 
 {% block content %}
 
-<a class="btn btn-outline-dark" href="{% url 'documents:document_list' %}">
+<a class="btn btn-outline-dark" href="{% url 'contracts:contract_list' %}">
     <i class="fa fa-angle-left"></i> Back
 </a>
+
+{% if messages %}
+    <div class="alert-container">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
 
 <div class="card card-default p-10 mt-3">
         <div class="card-body">
@@ -21,7 +31,7 @@
                             {{ form.expiry_date|as_crispy_field }}
 
                             <label for="id_files">Choose files:</label>
-                            <input type="file" name="files" id="id_files" multiple>
+                            <input type="file" name="files" id="id_files" multiple required> 
                             <div class="form-group d-flex justify-content-between mt-4">
 
                                 <button type="submit" class="btn btn-primary">Create Contract</button>
