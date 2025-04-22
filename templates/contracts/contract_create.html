@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<a class="btn btn-outline-dark" href="{% url 'documents:document_list' %}">
+    <i class="fa fa-angle-left"></i> Back
+</a>
+
+<div class="card card-default p-10 mt-3">
+        <div class="card-body">
+            <div class="body-block">
+                <section class="section">
+                    <div class="row sameheight-container">
+                        <div class="col-md-6">
+                        <form method="POST" enctype="multipart/form-data" id="document-form">
+                            {% csrf_token %}
+                            {{ form.vendor|as_crispy_field }}
+                            {{ form.join_date|as_crispy_field }}
+                            {{ form.expiry_date|as_crispy_field }}
+
+                            <label for="id_files">Choose files:</label>
+                            <input type="file" name="files" id="id_files" multiple>
+                            <div class="form-group d-flex justify-content-between mt-4">
+
+                                <button type="submit" class="btn btn-primary">Create Contract</button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const joinDateInput = document.getElementById('id_join_date');
+        const expiryDateInput = document.getElementById('id_expiry_date');
+
+        joinDateInput.addEventListener('change', function () {
+            const joinDate = new Date(this.value);
+            if (!isNaN(joinDate)) {
+                // Add 1 year (365 days)
+                const expiryDate = new Date(joinDate);
+                expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+
+                // Format the date as YYYY-MM-DD
+                const formatted = expiryDate.toISOString().split('T')[0];
+                expiryDateInput.value = formatted;
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

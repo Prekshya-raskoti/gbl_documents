@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Manage Contracts for {{ vendor.name }}</h2>
+        <a class="btn btn-outline-dark" href="{% url 'contracts:contract_list' %}">
+            <i class="fa fa-angle-left"></i> Back   
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="card-title h5 mb-0">Existing Contracts</h3>
+        </div>
+        <div class="card-body">
+            {% if vendor_contracts %}
+                <ul class="list-group">
+                    {% for contract in vendor_contracts %}
+                        <li class="list-group-item d-flex flex-column flex-md-row align-items-md-center gap-3">
+                            <div class="me-auto d-flex align-items-center">
+                                <div style="width: 150px;"><strong>{{ contract.vendor }}</strong></div>
+                                <div style="width: 250px;"><strong>Expiry Date:</strong> {{ contract.expiry_date }}</div>
+                                <a href="{{ contract.file.url }}" class="btn btn-sm btn-outline-primary ms-4" target="_blank">
+                                    <i class="fa fa-eye"></i> View
+                                </a>
+                            </div>
+                            <form method="POST" enctype="multipart/form-data" class="row g-2 align-items-center">
+                                {% csrf_token %}
+                                <input type="hidden" name="contract_id" value="{{ contract.id }}">
+                                <input type="hidden" name="vendor" value="{{ contract.vendor.id }}">
+
+                                <div class="col-12 col-md-5">
+                                    <div class="input-group input-group-sm">
+                                        <input type="file" name="file" required class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-5">
+                                    <input type="date" name="expiry_date" value="{{ contract.expiry_date }}" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-12 col-md-2">
+                                    <button type="submit" class="btn btn-sm btn-primary w-100">Update</button>
+                                </div>
+                            </form>
+                            <form method="POST" action="" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="alert alert-info">No contracts uploaded yet.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title h5 mb-0">Add New Contract</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        Please correct the errors below.
+                    </div>
+                {% endif %}
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+                
+                <div class="row g-3">
+                    {% if form.vendor %}
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="{{ form.vendor.id_for_label }}" class="form-label">Vendor</label>
+                                <select name="vendor" id="{{ form.vendor.id_for_label }}" class="form-select" disabled>
+                                    <option value="{{ vendor.id }}" selected>{{ vendor.name }}</option>
+                                </select>
+                                <!-- Hidden field to ensure the value is submitted -->
+                                <input type="hidden" name="vendor" value="{{ vendor.id }}">
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                    {% for field in form %}
+                        {% if field.name != 'vendor' %}
+                            <div class="col-12 col-md-6 {% if field.name == 'expiry_date' %}col-md-6{% endif %}">
+                                <div class="form-group">
+                                    {{ field|as_crispy_field }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa fa-plus-circle"></i> Add Contract
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const existingFiles = new Set();
+        
+        // Collect file names already used in existing contracts
+        document.querySelectorAll('.list-group-item input[name="file"]').forEach(input => {
+            existingFiles.add(input.value);
+        });
+
+        // Hook into the "Add New Contract" file input
+        const newFileInput = document.querySelector('form:not([class]) input[name="file"]');
+        
+        if (newFileInput) {
+            newFileInput.addEventListener("change", function () {
+                const selectedFile = this.value;
+
+                if (existingFiles.has(selectedFile)) {
+                    alert("This file has already been added. Please choose another.");
+                    this.value = ""; // Reset selection
+                }
+            });
+        }
+    });
+</script>
+
+{% endblock %}

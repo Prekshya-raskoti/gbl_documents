@@ -3,32 +3,34 @@
 {% load static %}
 
 {% block content %}
-
 <div>
     <div class="d-flex justify-content-between align-items-center">
         <h2>Vendor Contracts</h2>
-        
-        <!-- Bell icon for notifications on the right -->
+
+        <!-- Notification Bell -->
         <div class="notification-bell" style="position: relative;">
             <button class="btn btn-outline-primary" id="bell-icon" style="font-size: 24px;">
                 <i class="fa fa-bell"></i>
                 {% if expiring_contracts %}
-                    <span class="badge bg-danger" id="notification-count" style="position: absolute; top: 0; right: 0; font-size: 12px; padding: 2px 6px;">{{ expiring_contracts|length }}</span>
+                    <span class="badge bg-danger" id="notification-count"
+                          style="position: absolute; top: 0; right: 0; font-size: 12px; padding: 2px 6px;">
+                        {{ expiring_contracts|length }}
+                    </span>
                 {% endif %}
             </button>
 
-            <!-- Notification dropdown -->
-            <div id="notification-dropdown" class="dropdown-menu" style="display: none; position: absolute; top: 30px; right: 0; width: 300px; z-index: 1000;">
-                <div class="dropdown-header d-flex justify-content-between">
+            <!-- Dropdown -->
+            <div id="notification-dropdown" class="dropdown-menu"
+                 style="display: none; position: absolute; top: 35px; right: 0; width: 300px; z-index: 1000;">
+                <div class="dropdown-header d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
                     <strong>Expiring Contracts</strong>
-                    <!-- Close button for the dropdown -->
                     <button type="button" id="close-dropdown" class="btn-close" style="font-size: 14px;" aria-label="Close"></button>
                 </div>
                 {% if expiring_contracts %}
-                    <ul class="list-group">
+                    <ul class="list-group list-group-flush">
                         {% for contract in expiring_contracts %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>{{ contract.vendor.name }} - Expiry in {{ contract.expiry_date|date:"Y-m-d" }}</span>
+                                <span>{{ contract.vendor.name }} - Expires in {{ contract.expiry_date|timeuntil }}</span>
                             </li>
                         {% endfor %}
                     </ul>
@@ -38,16 +40,16 @@
             </div>
         </div>
     </div>
+
     <hr>
-    
+
     <div class="mb-3">
         <a href="{% url 'contracts:contract_create' %}" class="btn btn-primary">
             Create New Contract
         </a>
     </div>
 
-    <!-- Contracts Table -->
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>S.N.</th>
@@ -67,13 +69,8 @@
                     <td>{{ contract.expiry_date }}</td>
                     <td>{{ contract.created_by.username }}</td>
                     <td>
-                        <a href="{% url 'contracts:contract_detail' contract.pk %}" class="btn btn-secondary btn-sm">
-                            <i class="fa fa-eye"></i>
-                        </a>
-                        <a href="{% url 'contracts:contract_update' contract.pk %}" class="btn btn-warning btn-sm">
-                            <i class="fa fa-edit"></i>
-                        </a>
-                        <form method="POST" action="{% url 'contracts:contract_delete' contract.pk %}" style="display:inline;">
+                        <a href="{% url 'contracts:vendor_contract_manage' contract.vendor.pk %}" class="btn btn-warning btn-sm">Manage Documents</a>
+                        <form method="POST" action="#" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
                                 <i class="fa fa-trash"></i>
@@ -86,28 +83,27 @@
     </table>
 </div>
 
-{% endblock content %}
-
-{% block extra_js %}
+<!-- Notification dropdown toggle script -->
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const bellIcon = document.getElementById('bell-icon');
-        const notificationDropdown = document.getElementById('notification-dropdown');
-        const closeDropdownButton = document.getElementById('close-dropdown');
+document.addEventListener('DOMContentLoaded', function () {
+    const bellIcon = document.getElementById('bell-icon');
+    const dropdown = document.getElementById('notification-dropdown');
+    const closeBtn = document.getElementById('close-dropdown');
 
-        // Toggle the visibility of the notification dropdown when the bell is clicked
-        bellIcon.addEventListener('click', function () {
-            if (notificationDropdown.style.display === 'none' || notificationDropdown.style.display === '') {
-                notificationDropdown.style.display = 'block';
-            } else {
-                notificationDropdown.style.display = 'none';
-            }
-        });
-
-        // Close the notification dropdown when the close button is clicked
-        closeDropdownButton.addEventListener('click', function () {
-            notificationDropdown.style.display = 'none';
-        });
+    bellIcon.addEventListener('click', function () {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
     });
+
+    closeBtn.addEventListener('click', function () {
+        dropdown.style.display = 'none';
+    });
+
+    // Close dropdown if clicked outside
+    document.addEventListener('click', function (event) {
+        if (!event.target.closest('.notification-bell')) {
+            dropdown.style.display = 'none';
+        }
+    });
+});
 </script>
 {% endblock %}

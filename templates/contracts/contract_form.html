@@ -5,10 +5,10 @@
 <link rel="stylesheet" href="{% static 'css/app-custom.css' %}">
 
 {% block content %}
-<a class="btn btn-success-outline" href="{% url 'contracts:contract_list' %}">
+<a class="btn btn-outline-dark" href="{% url 'contracts:contract_list' %}">
     <i class="fa fa-angle-left"></i> Back
 </a>
-<div class="card card-default p-10">
+<div class="card card-default p-10 mt-3">
     <div class="card-body">
         <div class="body-block">
             <section class="section">
@@ -29,11 +29,7 @@
                                 {{ form.expiry_date|as_crispy_field }}
                             </div>
 
-                            <div id="contract-file-fields-container">
-                                <div class="form-group d-flex align-items-center gap-2" id="file-field-1">
-                                    <input type="file" name="file" class="form-control" required>
-                                </div>
-                            </div>
+                          
                             
 
                             <div class="form-group d-flex justify-content-between mt-4">
