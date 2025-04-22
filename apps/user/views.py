@@ -66,10 +66,7 @@ class VendorListView(ListView):
 
         if query:
             queryset = queryset.filter(
-                Q(name__icontains=query) |
-                Q(email__icontains=query) |
-                Q(address__icontains=query) |
-                Q(phone__icontains=query)
+                Q(name__icontains=query)
             )
 
         if from_date:

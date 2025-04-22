@@ -10,9 +10,13 @@
     <a href="{% url 'documents:document_create' %}" class="btn btn-primary">
         Add Vendor
     </a> 
-    <form method="get" class="d-flex gap-2" style="max-width: 500px;">
-        <input type="text" name="q" class="form-control" placeholder="Search Vendor..." value="{{ request.GET.q }}">
-        
+    <form method="get" class="d-flex align-items-center" style="gap: 10px;">
+        <select class="form-control select2" id="vendor_search" name="q" style="width: 100%;">
+            <option value="">Search Vendors..</option>
+            {% for vendor in vendors %}
+            <option value="{{ vendor.name }}">{{ vendor.name }}</option>
+            {% endfor %}
+        </select>
     </form>
 </div>
 

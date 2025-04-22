@@ -1,6 +1,65 @@
 {% extends "base.html" %}
+
 {% load tz %}
+
 {% block content %}
+<style>
+    .modal-dialog {
+        max-width: 400px;
+        margin-top: -250px;
+    }
+
+    .modal-content {
+        border-radius: 8px;
+    }
+
+    .modal-header {
+        background-color: rgb(48, 47, 47);
+        color: #fff;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .modal-title {
+        font-weight: bold;
+        font-size: 1.25rem;
+    }
+
+    .modal-body {
+        font-size: 1rem;
+        font-weight: bolder;
+        color: #495057;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: center;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+    }
+</style>
 <h2>Vendor List</h2>
 <hr>
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -9,7 +68,12 @@
     </a>
 
     <form method="get" class="d-flex align-items-center" style="gap: 10px;">
-        <input type="text" name="q" class="form-control" placeholder="Search Vendor..." value="{{ request.GET.q }}" style="max-width: 180px;">
+        <select class="form-control select2" id="vendor_search" name="q" style="width: 100%;">
+            <option value="">Search Vendors..</option>
+            {% for vendor in vendors %}
+            <option value="{{ vendor.name }}">{{ vendor.name }}</option>
+            {% endfor %}
+        </select>
         <input type="date" name="from_date" class="form-control" value="{{ request.GET.from_date }}" style="max-width: 150px;"> 
         <input type="date" name="to_date" class="form-control" value="{{ request.GET.to_date }}" style="max-width: 150px;">
         <button type="submit" class="btn btn-outline-secondary">
@@ -43,14 +107,35 @@
                 <td>
                     <a href="{% url 'user:edit_vendor' vendor.id %}" class="btn btn-warning btn-sm">
                         <i class="fa fa-edit"></i>
-                    </a>    
-                    <form method="get" action="{% url 'user:delete_vendor' vendor.id %}" style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm">
-                            <i class="fa fa-trash"></i>
-                        </button>
-                    </form>
-                    
+                    </a>
+                
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ vendor.id }}">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                
+                    <div class="modal fade" id="deleteModal{{ vendor.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ vendor.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel{{ vendor.id }}">Delete Vendor</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete "{{ vendor.name }}"?
+                                </div>
+                                <div class="modal-footer">
+                                    <form method="post" action="{% url 'user:delete_vendor' vendor.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                                    </form>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </td>
+                
+                
             </tr>
         {% empty %}
             <tr>
@@ -61,3 +146,20 @@
 </table> 
 {% include 'pagination.html' %}
 {% endblock %}
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#vendor-search').select2({
+            placeholder: "Search Vendor...",
+            allowClear: true,
+            dropdownCssClass: 'select2-scrollable', 
+        });
+    });
+</script>
+<style>
+    .select2-scrollable .select2-results__options {
+        max-height: 200px; 
+        overflow-y: auto; 
+    }
+</style>
+{% endblock scripts %}
