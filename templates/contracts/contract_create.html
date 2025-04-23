@@ -27,6 +27,9 @@
                         <form method="POST" enctype="multipart/form-data" id="document-form">
                             {% csrf_token %}
                             {{ form.vendor|as_crispy_field }}
+                            <div id="id_vendor_error" class="invalid-feedback" style="display: none;">
+                                <p id="error_1_id_vendor"><strong>This vendor already has an active contract.</strong></p>
+                            </div>
                             {{ form.join_date|as_crispy_field }}
                             {{ form.expiry_date|as_crispy_field }}
 
@@ -49,21 +52,39 @@
     document.addEventListener('DOMContentLoaded', function () {
         const joinDateInput = document.getElementById('id_join_date');
         const expiryDateInput = document.getElementById('id_expiry_date');
+        const vendorInput = document.getElementById('id_vendor');
+        const vendorError = document.getElementById('id_vendor_error');
 
+
+        // Auto-set expiry date
         joinDateInput.addEventListener('change', function () {
             const joinDate = new Date(this.value);
             if (!isNaN(joinDate)) {
-                // Add 1 year (365 days)
                 const expiryDate = new Date(joinDate);
                 expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-
-                // Format the date as YYYY-MM-DD
                 const formatted = expiryDate.toISOString().split('T')[0];
                 expiryDateInput.value = formatted;
             }
         });
+
+        // Check active contract on vendor change
+        vendorInput.addEventListener('change', function () {
+            const vendorId = this.value;
+            fetch(`/contracts/check-active-contract/?vendor_id=${vendorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.has_active_contract) {
+                        vendorInput.classList.add('is-invalid');
+                        vendorError.style.display = 'block';              
+                    } else {
+                        vendorInput.classList.remove('is-invalid');
+                        vendorError.style.display = 'none';
+                    }
+                });
+        });
     });
 </script>
+
 
 
 {% endblock %}

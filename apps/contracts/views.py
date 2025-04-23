@@ -1,13 +1,13 @@
 from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, ListView, TemplateView
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.timezone import now
-from datetime import timedelta, date
-
-
+from datetime import timedelta
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from django.utils import timezone
 from apps.user.models import Vendor
 from .models import Contract, ContractFile
 from .forms import ContractForm
@@ -80,7 +80,7 @@ class ContractListView(ListView):
         )
         return context
 
-class VendorContractManageView(LoginRequiredMixin,TemplateView):
+class VendorContractManageView(TemplateView):
     template_name = 'contracts/vendor_contract_manage.html'
 
     def get_context_data(self, **kwargs):
@@ -194,3 +194,18 @@ class ExpiringContractsListView(ListView):
             expiry_date__gte=today,  # Expiry date is today or later
             expiry_date__lte=next_month  # Expiry date is within the next 30 days
         ).order_by("expiry_date")
+
+
+
+@require_GET
+def check_active_contract(request):
+    vendor_id = request.GET.get('vendor_id')
+    has_active = False
+
+    if vendor_id:
+        has_active = Contract.objects.filter(
+            vendor_id=vendor_id,
+            expiry_date__gte=timezone.now().date()
+        ).exists()
+
+    return JsonResponse({'has_active_contract': has_active})
