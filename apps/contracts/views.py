@@ -1,4 +1,5 @@
 from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, ListView, TemplateView
 from django.urls import reverse, reverse_lazy
 from django.contrib import messages
@@ -17,6 +18,17 @@ class ContractCreateView(CreateView):
     template_name = "contracts/contract_create.html"
     success_url = reverse_lazy("contracts:contract_list")
 
+    def get_initial(self):
+        initial = super().get_initial()
+        vendor_id = self.request.GET.get("vendor_id")
+        if vendor_id:
+            try:
+                vendor = Vendor.objects.get(id=vendor_id)
+                initial["vendor"] = vendor
+            except Vendor.DoesNotExist:
+                pass
+        return initial
+
     def form_valid(self, form):
         vendor = form.cleaned_data.get("vendor")
         join_date = form.cleaned_data.get("join_date")
@@ -30,9 +42,11 @@ class ContractCreateView(CreateView):
         ).exists()
 
         if active_contract:
-            messages.error(self.request, f"{vendor.name} already has an active contract.")
-            return redirect("contracts:contract_list")
+            # Add an error to the form and re-render the template
+            form.add_error("vendor", f"{vendor.name} already has an active contract.")
+            return self.form_invalid(form)
 
+        # Set additional fields before saving
         form.instance.expiry_date = expiry_date
         form.instance.created_by = self.request.user
         messages.success(self.request, "Contract created successfully!")  
@@ -66,7 +80,7 @@ class ContractListView(ListView):
         )
         return context
 
-class VendorContractManageView(TemplateView):
+class VendorContractManageView(LoginRequiredMixin,TemplateView):
     template_name = 'contracts/vendor_contract_manage.html'
 
     def get_context_data(self, **kwargs):
@@ -75,10 +89,9 @@ class VendorContractManageView(TemplateView):
         vendor = get_object_or_404(Vendor, pk=vendor_pk)
         contracts = Contract.objects.filter(vendor=vendor).order_by('expiry_date')
 
-        # Get all contracts of the vendor
         context['vendor'] = vendor
         context['vendor_contracts'] = contracts
-        context['form'] = ContractForm()  # Form for adding/updating contracts
+        context['form'] = ContractForm()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -89,26 +102,26 @@ class VendorContractManageView(TemplateView):
         file_id = request.POST.get("file_id")
         contract_id = request.POST.get("contract_id")
 
-        # Handle file update
+        # Update existing file
         if action == "update_file" and file_id:
             contract_file = get_object_or_404(ContractFile, id=file_id)
             new_file = request.FILES.get("file")
             if new_file:
-                contract_file.file.delete()  # Delete the old file from storage
-                contract_file.file = new_file  # Assign the new file
+                contract_file.file.delete()  # delete old file from storage
+                contract_file.file = new_file
                 contract_file.save()
                 messages.success(request, "File updated successfully.")
             else:
                 messages.error(request, "No file provided for update.")
 
-        # Handle file delete
+        # Delete file
         elif action == "delete_file" and file_id:
             contract_file = get_object_or_404(ContractFile, id=file_id)
-            contract_file.file.delete()  # Delete the file from storage
-            contract_file.delete()  # Delete the file record
+            contract_file.file.delete()
+            contract_file.delete()
             messages.success(request, "File deleted successfully.")
 
-        # Handle contract update
+        # Update contract
         elif action == "update_contract" and contract_id:
             contract = get_object_or_404(Contract, id=contract_id, vendor=vendor)
             form = ContractForm(request.POST, instance=contract)
@@ -118,13 +131,41 @@ class VendorContractManageView(TemplateView):
             else:
                 messages.error(request, "Failed to update contract.")
 
-        # Handle contract delete
+        # Delete contract
         elif action == "delete_contract" and contract_id:
             contract = get_object_or_404(Contract, id=contract_id, vendor=vendor)
             contract.delete()
             messages.success(request, "Contract deleted successfully.")
 
+                # Handle file upload for existing contract
+        elif action == "add_files" and contract_id:
+            contract = get_object_or_404(Contract, id=contract_id, vendor=vendor)
+            files = request.FILES.getlist("files")
+
+            if files:
+                for file in files:
+                    ContractFile.objects.create(
+                        contract=contract,
+                        file=file,
+                        uploaded_by=request.user  
+                    )
+                messages.success(request, "Files uploaded successfully.")
+            else:
+                messages.error(request, "No files selected to upload.")
+
+        # Add multiple files to contract
+        elif action == "add_files" and contract_id:
+            contract = get_object_or_404(Contract, id=contract_id, vendor=vendor)
+            files = request.FILES.getlist("files")
+            if files:
+                for file in files:
+                    ContractFile.objects.create(contract=contract, file=file)
+                messages.success(request, f"{len(files)} file(s) uploaded successfully.")
+            else:
+                messages.error(request, "No files were selected for upload.")
+
         return redirect(reverse("contracts:vendor_contract_manage", kwargs={"pk": vendor.pk}))
+
     
 class VendorContractDeleteView(View):
     def post(self, request, pk):
