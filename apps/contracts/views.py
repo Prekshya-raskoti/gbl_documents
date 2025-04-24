@@ -34,22 +34,25 @@ class ContractCreateView(CreateView):
         join_date = form.cleaned_data.get("join_date")
         expiry_date = join_date + timedelta(days=365)
 
-        # Check for existing active contract
+        # Check for existing active contract, excluding expiring contracts
+        today = now().date()
+        next_month = today + timedelta(days=30)
         active_contract = Contract.objects.filter(
             vendor=vendor,
-            join_date__lte=now().date(),
-            expiry_date__gte=now().date()
+            join_date__lte=today,
+            expiry_date__gte=today
+        ).exclude(
+            expiry_date__lte=next_month  # Exclude contracts expiring within the next 30 days
         ).exists()
 
         if active_contract:
-            # Add an error to the form and re-render the template
-            form.add_error("vendor", f"{vendor.name} already has an active contract.")
-            return self.form_invalid(form)
+            # If an active contract exists, replace it with the new one
+            active_contract.delete()
 
         # Set additional fields before saving
         form.instance.expiry_date = expiry_date
         form.instance.created_by = self.request.user
-        messages.success(self.request, "Contract created successfully!")  
+        messages.success(self.request, "Contract created successfully, replacing the old one!")  
 
         return super().form_valid(form)
 
@@ -87,7 +90,8 @@ class VendorContractManageView(TemplateView):
         context = super().get_context_data(**kwargs)
         vendor_pk = self.kwargs.get('pk')
         vendor = get_object_or_404(Vendor, pk=vendor_pk)
-        contracts = Contract.objects.filter(vendor=vendor).order_by('expiry_date')
+
+        contracts = Contract.objects.filter(vendor=vendor).order_by('-created_at')
 
         context['vendor'] = vendor
         context['vendor_contracts'] = contracts

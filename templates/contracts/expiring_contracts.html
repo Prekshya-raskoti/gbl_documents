@@ -7,7 +7,7 @@
         <h2>Expiring Contracts</h2>
         <a class="btn btn-outline-dark mt-3 mr-3" href="{% url 'contracts:contract_list' %}">
             <i class="fa fa-angle-left"></i> Back
-        </a>
+        </a>  
     </div>
 
     <hr>
@@ -22,6 +22,7 @@
                         <th>Join Date</th>
                         <th>Expiry Date</th>
                         <th>Uploaded By</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,6 +33,12 @@
                             <td>{{ contract.join_date }}</td>
                             <td>{{ contract.expiry_date }}</td>
                             <td>{{ contract.created_by.username }}</td>
+                            <td>
+                                <a href="{% url 'contracts:contract_create' %}?vendor_id={{ contract.vendor.id }}&vendor_name={{ contract.vendor.name }}" class="btn btn-success">
+                                    <i class="fa fa"></i> Renew Contract
+                                </a>
+                            </td>
+                                
                         </tr>
                     {% endfor %}
                 </tbody>

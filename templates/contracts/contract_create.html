@@ -33,6 +33,9 @@
                             {{ form.join_date|as_crispy_field }}
                             {{ form.expiry_date|as_crispy_field }}
 
+                            <!-- Hidden field for vendor name -->
+                            <input type="hidden" name="vendor_name" value="{{ vendor_name }}">
+
                             <label for="id_files">Choose files:</label>
                             <input type="file" name="files" id="id_files" multiple required> 
                             <div class="form-group d-flex justify-content-between mt-4">
@@ -84,7 +87,5 @@
         });
     });
 </script>
-
-
 
 {% endblock %}
