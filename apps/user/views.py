@@ -62,8 +62,6 @@ class VendorListView(ListView):
         to_date = self.request.GET.get('to_date')
 
         queryset = Vendor.objects.all().order_by('id')
-
-
         if query:
             queryset = queryset.filter(
                 Q(name__icontains=query)

@@ -72,11 +72,6 @@ body {
   background-color: #5a6268;
   border-color: #545b62;
 }
-
-.select2-scrollable .select2-results__options {
-  max-height: 200px;
-  overflow-y: auto;
-}
 .user-profile-section{
   margin-top: 25px;
 }

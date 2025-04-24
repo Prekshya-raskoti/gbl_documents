@@ -1,23 +1,6 @@
 {% extends "base.html" %}
-
 {% load tz %}
 {% load static %}
-{% block styles %}
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
-<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
-<style>
-    .select2-container--default .select2-results > .select2-results__options {
-        max-height: 200px !important;
-        overflow-y: auto !important;
-    }
-    
-    .select-container {
-        width: 100px;
-        display: inline-block;
-    }
-</style>
-{% endblock styles %}
 {% block content %}
 <h2>Vendor List</h2>
 <hr>
@@ -25,22 +8,39 @@
     <a href="{% url 'user:add_vendor' %}" class="btn btn-primary me-3">
         Add Vendor
     </a>
-
-    <form method="get" class="d-flex align-items-center" style="gap: 10px;">
-        <div class="select-container">
-            <select class="form-control select2" id="vendor_search" name="q">
-                <option value="">Search Vendors..</option>
-                {% for vendor in vendors %}
-                <option value="{{ vendor.name }}">{{ vendor.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <input type="date" name="from_date" class="form-control" value="{{ request.GET.from_date }}" style="max-width: 150px;"> 
-        <input type="date" name="to_date" class="form-control" value="{{ request.GET.to_date }}" style="max-width: 150px;">
+    <form method="get" class="d-flex align-items-center" style="gap:10px;">
+        <select class="form-control" id="vendor_search" name="q">
+            <option value=''>Vendors..</option>
+            {% for vendor in vendors %}
+            <option value="{{ vendor.name }}">{{ vendor.name }}</option>
+            {% endfor %}
+        </select>
+        
+        <input 
+            type="text" 
+            name="from_date" 
+            class="form-control" 
+            placeholder="From "
+            onfocus="(this.type='date')" 
+            value="{{ request.GET.from_date }}" 
+            style="max-width: 150px;"
+        >
+    
+        <input 
+            type="text" 
+            name="to_date" 
+            class="form-control" 
+            placeholder="To "
+            onfocus="(this.type='date')" 
+            value="{{ request.GET.to_date }}" 
+            style="max-width: 150px;"
+        >
+    
         <button type="submit" class="btn btn-outline-secondary">
             <i class="fa fa-filter"></i>
         </button>
     </form>
+    
 </div>
 <table class="table">
     <thead>
@@ -98,11 +98,11 @@
                 
                 
             </tr>
-        {% empty %}
+            {% empty %}
             <tr>
-                <td colspan="5">No vendors available.</td>
+                <td colspan="8" class="text-center">No vendors found.</td>
             </tr>
-        {% endfor %}
+            {% endfor %}
     </tbody>
 </table> 
 {% include 'pagination.html' %}
@@ -111,26 +111,8 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        $('#vendor_search').select2({
-            placeholder: "Search Vendor...",
-            allowClear: true,
-            width: '100%',
-            dropdownParent: $('.select-container')
-        });
+    $("#vendor_search").select2({ width: '200px' })
 
-        $('form').on('submit', function() {
-            var vendorId = $('#vendor_search').val();
-            if (vendorId) {
-                this.submit();
-            }
-        });
-
-        {% if request.method == "POST" and request.POST.vendor %}
-        $('#vendor_search').val('{{ request.POST.vendor }}').trigger('change.select2');
-        {% elif request.method == "GET" and request.GET.vendor %}
-        $('#vendor_search').val('{{ request.GET.vendor }}').trigger('change.select2');
-        {% endif %}
-    });
 </script>
+
 {% endblock scripts %}
