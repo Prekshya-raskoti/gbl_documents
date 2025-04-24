@@ -12,15 +12,14 @@
     </div>
 
     <!-- Existing Contracts Section -->
-    {% if vendor_contracts %}
-        {% for contract in vendor_contracts %}
+    {% if contract %}
             <div class="card mb-4">
                 <div class="card-header">
                     <h3 class="card-title h5 mb-0">
-                        {% if forloop.first %}
-                            <span style="color: green;">Existing Contract</span>
+                        {% if contract.is_active %}
+                            <span style="color: green;">Active Contract</span>
                         {% else %}
-                        <span style="color: red;">Expired Contract</span>
+                        <span style="color: red;">Inactive Contract</span>
                         {% endif %}
                     </h3>
                 </div>
@@ -94,7 +93,6 @@
                     </div>
                 </div>
             </div>
-        {% endfor %}
     {% else %}
         <div class="alert alert-info">No contracts uploaded yet.</div>
     {% endif %}

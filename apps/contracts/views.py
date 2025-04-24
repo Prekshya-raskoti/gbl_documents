@@ -35,19 +35,21 @@ class ContractCreateView(CreateView):
         expiry_date = join_date + timedelta(days=365)
 
         # Check for existing active contract, excluding expiring contracts
-        today = now().date()
-        next_month = today + timedelta(days=30)
-        active_contract = Contract.objects.filter(
-            vendor=vendor,
-            join_date__lte=today,
-            expiry_date__gte=today
-        ).exclude(
-            expiry_date__lte=next_month  # Exclude contracts expiring within the next 30 days
-        ).exists()
+        try:
+        
+            active_contract = Contract.objects.get(
+                vendor=vendor,
+                is_active=True,
+            )
 
-        if active_contract:
-            # If an active contract exists, replace it with the new one
-            active_contract.delete()
+            if active_contract:
+                # If an active contract exists, replace it with the new one
+                active_contract.is_active = False
+                active_contract.save()
+                messages.info(self.request, "An active contract was found and has been replaced with the new one.")
+        except Contract.DoesNotExist:
+            # No active contract found, proceed with the new contract
+            pass
 
         # Set additional fields before saving
         form.instance.expiry_date = expiry_date
@@ -72,13 +74,14 @@ class ContractListView(ListView):
     context_object_name = "contracts"
 
     def get_queryset(self):
-        return Contract.objects.all().order_by("-expiry_date")
-
+        return Contract.objects.filter(is_active=True).order_by("-created_at")
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         today = now().date()
         next_month = today + timedelta(days=30)
         context["expiring_contracts"] = Contract.objects.filter(
+            is_active=True,
             expiry_date__range=(today, next_month)
         )
         return context
@@ -88,13 +91,12 @@ class VendorContractManageView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        vendor_pk = self.kwargs.get('pk')
-        vendor = get_object_or_404(Vendor, pk=vendor_pk)
+        contract_pk = self.kwargs.get('pk')
+        contract = get_object_or_404(Contract, pk=contract_pk)
 
-        contracts = Contract.objects.filter(vendor=vendor).order_by('-created_at')
 
-        context['vendor'] = vendor
-        context['vendor_contracts'] = contracts
+        context['vendor'] = contract.vendor
+        context['contract'] = contract
         context['form'] = ContractForm()
         return context
 
@@ -174,14 +176,10 @@ class VendorContractManageView(TemplateView):
 class VendorContractDeleteView(View):
     def post(self, request, pk):
         contract = get_object_or_404(Contract, pk=pk)
-        contract_files = contract.files.all() 
-        for file in contract_files:
-            file.file.delete()  # Deletes the file from storage
-            file.delete()  # Deletes the file record from the database
-
-        contract.delete()
-
-        messages.success(request, "Contract and all associated files have been deleted successfully.")
+        contract.is_active= False
+        contract.save()
+        
+        messages.success(request, "Contract deleted successfully.")
 
         return redirect(reverse("contracts:contract_list"))
 
@@ -195,9 +193,21 @@ class ExpiringContractsListView(ListView):
         next_month = today + timedelta(days=30)
         # Filter contracts expiring within the next 30 days
         return Contract.objects.filter(
+            is_active=True,
             expiry_date__gte=today,  # Expiry date is today or later
             expiry_date__lte=next_month  # Expiry date is within the next 30 days
         ).order_by("expiry_date")
+    
+
+class InactiveContractsListView(ListView):
+    model = Contract
+    template_name = "contracts/inactive_contracts.html"
+    context_object_name = "inactive_contracts"
+
+    def get_queryset(self):
+        return Contract.objects.filter(
+           is_active=False,
+        ).order_by("-created_at")
 
 
 
