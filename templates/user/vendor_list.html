@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load tz %}
 {% load static %}
+
 {% block content %}
 <h2>Vendor List</h2>
 <hr>
@@ -10,11 +11,12 @@
     </a>
     <form method="get" class="d-flex align-items-center" style="gap:10px;">
         <select class="form-control" id="vendor_search" name="q">
-            <option value=''>Vendors..</option>
+            <option value="">Vendors..</option>
             {% for vendor in vendors %}
-            <option value="{{ vendor.name }}">{{ vendor.name }}</option>
+                <option value="{{ vendor.name }}">{{ vendor.name }}</option>
             {% endfor %}
         </select>
+        
         
         <input 
             type="text" 
@@ -109,10 +111,16 @@
 {% endblock %}
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+
 
 <script>
-    $("#vendor_search").select2({ width: '200px' })
-
+    $(document).ready(function () {
+        $("#vendor_search").select2({
+            width: '200px',
+            placeholder: "Search Vendor...",
+            allowClear: true
+        });
+    });
 </script>
-
 {% endblock scripts %}

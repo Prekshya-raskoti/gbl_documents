@@ -101,7 +101,6 @@ class VendorUpdateView(UpdateView):
         return response
 class VendorDeleteView(DeleteView):
     model = Vendor
-    template_name = 'user/delete_vendor.html'
     success_url = reverse_lazy('user:user_vendor_list')
 
     def post(self, request, *args, **kwargs):
