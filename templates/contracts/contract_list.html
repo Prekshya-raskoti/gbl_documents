@@ -24,8 +24,10 @@
                  style="display: none; position: absolute; top: 35px; right: 0; width: 300px; z-index: 1000;">
                 <div class="dropdown-header d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
                     <strong>Expiring Contracts</strong>
-                    <button type="button" id="close-dropdown" class="btn-close" style="font-size: 14px;" aria-label="Close"></button>
-                </div>
+                    <button type="button" id="close-dropdown" class="btn btn-sm" style="font-size: 14px;" aria-label="Close">
+                        <i class="fa fa-times"></i>
+                    </button>
+                                    </div>
                 {% if expiring_contracts %}
                     <ul class="list-group list-group-flush">
                         {% for contract in expiring_contracts %}

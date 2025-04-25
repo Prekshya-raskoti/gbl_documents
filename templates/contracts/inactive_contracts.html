@@ -35,12 +35,6 @@
                             <td>{{ contract.created_by.username }}</td>
                             <td>
                                 <a href="{% url 'contracts:vendor_contract_manage' contract.pk %}" class="btn btn-warning btn-sm">Manage Contracts</a>
-                                <form method="POST" action="{% url 'contracts:vendor_contract_delete' contract.pk %}" style="display:inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this contract and all associated files?')">
-                                        <i class="fa fa-trash"></i> 
-                                    </button>
-                                </form>
                             </td>
                                 
                         </tr>

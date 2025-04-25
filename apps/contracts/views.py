@@ -219,7 +219,7 @@ def check_active_contract(request):
     if vendor_id:
         has_active = Contract.objects.filter(
             vendor_id=vendor_id,
-            expiry_date__gte=timezone.now().date()
+            is_active=True,
         ).exists()
 
     return JsonResponse({'has_active_contract': has_active})
