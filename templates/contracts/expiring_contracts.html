@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load tz %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Expiring Contracts</h2>
+        <a class="btn btn-outline-dark mt-3 mr-3" href="{% url 'contracts:contract_list' %}">
+            <i class="fa fa-angle-left"></i> Back
+        </a>  
+    </div>
+
+    <hr>
+
+    <div class="table">
+        {% if expiring_contracts %}
+            <table class="table table">
+                <thead>
+                    <tr>
+                        <th>S.N.</th>
+                        <th>Vendor</th>
+                        <th>Join Date</th>
+                        <th>Expiry Date</th>
+                        <th>Uploaded By</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contract in expiring_contracts %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ contract.vendor.name }}</td>
+                            <td>{{ contract.join_date }}</td>
+                            <td>{{ contract.expiry_date }}</td>
+                            <td>{{ contract.created_by.username }}</td>
+                            <td>
+                                <a href="{% url 'contracts:contract_create' %}?vendor_id={{ contract.vendor.id }}&vendor_name={{ contract.vendor.name }}" class="btn btn-success">
+                                    <i class="fa fa"></i> Renew Contract
+                                </a>
+                            </td>
+                                
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <!-- No Contracts Message -->
+            <div class="alert alert-info" role="alert">
+                No contracts are expiring within the next 30 days.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
