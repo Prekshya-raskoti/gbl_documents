@@ -48,12 +48,32 @@
                                     <button type="submit" class="btn btn-sm btn-primary w-100">Update</button>
                                 </div>
                             </form>
-                            <form method="POST" action="{% url 'documents:document_delete' doc.id %}" method="post" style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </form>
+                            
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ vendor.id }}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        
+                            <div class="modal fade" id="deleteModal{{ vendor.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ vendor.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel{{ vendor.id }}">Delete Vendor</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete "{{ vendor.name }}" documents?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <form method="post" action="{% url 'documents:document_delete' doc.id %}">
+                                                {% csrf_token %}
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            
+                                                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </li>
                     {% endfor %}
                 </ul>
