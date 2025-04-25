@@ -8,6 +8,7 @@ from datetime import timedelta
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from django.utils import timezone
+from django.db.models import Prefetch
 from apps.user.models import Vendor
 from .models import Contract, ContractFile
 from .forms import ContractForm
@@ -92,7 +93,12 @@ class VendorContractManageView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         contract_pk = self.kwargs.get('pk')
-        contract = get_object_or_404(Contract, pk=contract_pk)
+        contract = get_object_or_404(
+            Contract.objects.prefetch_related(
+                Prefetch('files', queryset=ContractFile.objects.order_by('-uploaded_at'))
+            ),
+            pk=contract_pk
+        )        
 
 
         context['vendor'] = contract.vendor
@@ -101,12 +107,12 @@ class VendorContractManageView(TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        vendor_pk = self.kwargs.get("pk")
-        vendor = get_object_or_404(Vendor, pk=vendor_pk)
+        contract_pk = self.kwargs.get("pk")
+        contract = get_object_or_404(Contract, pk=contract_pk)
 
         action = request.POST.get("action")
         file_id = request.POST.get("file_id")
-        contract_id = request.POST.get("contract_id")
+        vendor = contract.vendor    
 
         # Update existing file
         if action == "update_file" and file_id:
@@ -128,8 +134,8 @@ class VendorContractManageView(TemplateView):
             messages.success(request, "File deleted successfully.")
 
         # Update contract
-        elif action == "update_contract" and contract_id:
-            contract = get_object_or_404(Contract, id=contract_id, vendor=vendor)
+        elif action == "update_contract" and contract_pk:
+            contract = get_object_or_404(Contract, id=contract_pk, vendor=vendor)
             form = ContractForm(request.POST, instance=contract)
             if form.is_valid():
                 form.save()
@@ -137,15 +143,10 @@ class VendorContractManageView(TemplateView):
             else:
                 messages.error(request, "Failed to update contract.")
 
-        # Delete contract
-        elif action == "delete_contract" and contract_id:
-            contract = get_object_or_404(Contract, id=contract_id, vendor=vendor)
-            contract.delete()
-            messages.success(request, "Contract deleted successfully.")
 
-                # Handle file upload for existing contract
-        elif action == "add_files" and contract_id:
-            contract = get_object_or_404(Contract, id=contract_id, vendor=vendor)
+        # Handle file upload for existing contract
+        elif action == "add_files" and contract_pk:
+            # contract = get_object_or_404(Contract, id=contract_pk, vendor=vendor)
             files = request.FILES.getlist("files")
 
             if files:
@@ -159,18 +160,7 @@ class VendorContractManageView(TemplateView):
             else:
                 messages.error(request, "No files selected to upload.")
 
-        # Add multiple files to contract
-        elif action == "add_files" and contract_id:
-            contract = get_object_or_404(Contract, id=contract_id, vendor=vendor)
-            files = request.FILES.getlist("files")
-            if files:
-                for file in files:
-                    ContractFile.objects.create(contract=contract, file=file)
-                messages.success(request, f"{len(files)} file(s) uploaded successfully.")
-            else:
-                messages.error(request, "No files were selected for upload.")
-
-        return redirect(reverse("contracts:vendor_contract_manage", kwargs={"pk": vendor.pk}))
+        return redirect(reverse("contracts:vendor_contract_manage", kwargs={"pk": contract_pk}))
 
     
 class VendorContractDeleteView(View):
@@ -209,6 +199,15 @@ class InactiveContractsListView(ListView):
            is_active=False,
         ).order_by("-created_at")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = now().date()
+        next_month = today + timedelta(days=30)
+        context["expiring_contracts"] = Contract.objects.filter(
+            is_active=True,
+            expiry_date__range=(today, next_month)
+        )
+        return context
 
 
 @require_GET
