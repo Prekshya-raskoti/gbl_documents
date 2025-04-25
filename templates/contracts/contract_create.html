@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+
+<a class="btn btn-outline-dark" href="{% url 'contracts:contract_list' %}">
+    <i class="fa fa-angle-left"></i> Back
+</a>
+
+{% if messages %}
+    <div class="alert-container">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="card card-default p-10 mt-3">
+        <div class="card-body">
+            <div class="body-block">
+                <section class="section">
+                    <div class="row sameheight-container">
+                        <div class="col-md-6">
+                        <form method="POST" enctype="multipart/form-data" id="document-form">
+                            {% csrf_token %}
+                            {{ form.vendor|as_crispy_field }}
+                            <div id="id_vendor_error" class="invalid-feedback" style="display: none;">
+                                <p id="error_1_id_vendor"><strong>This vendor already has an active contract.</strong></p>
+                            </div>
+                            {{ form.join_date|as_crispy_field }}
+                            {{ form.expiry_date|as_crispy_field }}
+
+                            <!-- Hidden field for vendor name -->
+                            <input type="hidden" name="vendor_name" value="{{ vendor_name }}">
+
+                            <label for="id_files">Choose files:</label>
+                            <input type="file" name="files" id="id_files" multiple required> 
+                            <div class="form-group d-flex justify-content-between mt-4">
+
+                                <button type="submit" class="btn btn-primary">Create Contract</button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const joinDateInput = document.getElementById('id_join_date');
+        const expiryDateInput = document.getElementById('id_expiry_date');
+        const vendorInput = document.getElementById('id_vendor');
+        const vendorError = document.getElementById('id_vendor_error');
+
+
+        // Auto-set expiry date
+        joinDateInput.addEventListener('change', function () {
+            const joinDate = new Date(this.value);
+            if (!isNaN(joinDate)) {
+                const expiryDate = new Date(joinDate);
+                expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+                const formatted = expiryDate.toISOString().split('T')[0];
+                expiryDateInput.value = formatted;
+            }
+        });
+
+        // Check active contract on vendor change
+        vendorInput.addEventListener('change', function () {
+            const vendorId = this.value;
+            fetch(`/contracts/check-active-contract/?vendor_id=${vendorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.has_active_contract) {
+                        vendorInput.classList.add('is-invalid');
+                        vendorError.style.display = 'block';              
+                    } else {
+                        vendorInput.classList.remove('is-invalid');
+                        vendorError.style.display = 'none';
+                    }
+                });
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,103 +1,225 @@
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from datetime import timedelta
-from django.utils import timezone
-from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.views import View
+from django.views.generic import CreateView, ListView, TemplateView
+from django.urls import reverse, reverse_lazy
 from django.contrib import messages
-from django.shortcuts import redirect
-
-from .models import Contract
+from django.shortcuts import get_object_or_404, redirect
+from django.utils.timezone import now
+from datetime import timedelta
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from django.utils import timezone
+from apps.user.models import Vendor
+from .models import Contract, ContractFile
 from .forms import ContractForm
-
-
-def contract_list(request):
-    now = timezone.now()
-
-    # Get all contracts
-    contracts = Contract.objects.all()
-
-    # Filter those that expire in the next 7 days
-    expiring_contracts = contracts.filter(
-        expiry_date__lte=now + timedelta(days=7),
-        expiry_date__gt=now
-    )
-    
-
-    return render(request, 'contracts/contract_list.html', {
-        'contracts': contracts,
-        'expiring_contracts': expiring_contracts
-    })
-
-class ContractDetailView(DetailView):
-    model = Contract
-    template_name = 'contracts/contract_detail.html'
-    context_object_name = 'contract'
 
 class ContractCreateView(CreateView):
     model = Contract
     form_class = ContractForm
-    template_name = 'contracts/contract_form.html'
-    success_url = reverse_lazy('contracts:contract_list')
+    template_name = "contracts/contract_create.html"
+    success_url = reverse_lazy("contracts:contract_list")
 
-    def post(self, request, *args, **kwargs):
-        vendor = request.POST.get('vendor')
-        join_date = request.POST.get('join_date')
-        expiry_date = request.POST.get('expiry_date')
-        terms = request.POST.get('terms')
-
-        if not vendor or not join_date or not expiry_date:
-            messages.error(request, "All fields are required.")
-            return self.form_invalid(self.get_form())
-
-        created_contracts = []
-        counter = 1
-
-        while True:
-            file_key = f'file_{counter}' if counter > 1 else 'file'
-            contract_file = request.FILES.get(file_key)
-
-            if not contract_file:
-                break
-
-            Contract.objects.create(
-                vendor_id=vendor,
-                join_date=join_date,
-                expiry_date=expiry_date,
-                file=contract_file,
-                created_by=request.user
-            )
-
-            created_contracts.append(contract_file)
-            counter += 1
-
-        if created_contracts:
-            messages.success(request, "Contracts have been successfully uploaded!")
-            return redirect(self.success_url)
-        else:
-            messages.error(request, "Please upload at least one contract file.")
-            return self.form_invalid(self.get_form())
-
-
-class ContractUpdateView(UpdateView):
-    model = Contract
-    form_class = ContractForm
-    template_name = 'contracts/edit_contract.html'
-    success_url = reverse_lazy('contracts:contract_list')
+    def get_initial(self):
+        initial = super().get_initial()
+        vendor_id = self.request.GET.get("vendor_id")
+        if vendor_id:
+            try:
+                vendor = Vendor.objects.get(id=vendor_id)
+                initial["vendor"] = vendor
+            except Vendor.DoesNotExist:
+                pass
+        return initial
 
     def form_valid(self, form):
-        messages.success(self.request, "Contract updated successfully.")
+        vendor = form.cleaned_data.get("vendor")
+        join_date = form.cleaned_data.get("join_date")
+        expiry_date = join_date + timedelta(days=365)
+
+        # Check for existing active contract, excluding expiring contracts
+        try:
+        
+            active_contract = Contract.objects.get(
+                vendor=vendor,
+                is_active=True,
+            )
+
+            if active_contract:
+                # If an active contract exists, replace it with the new one
+                active_contract.is_active = False
+                active_contract.save()
+                messages.info(self.request, "An active contract was found and has been replaced with the new one.")
+        except Contract.DoesNotExist:
+            # No active contract found, proceed with the new contract
+            pass
+
+        # Set additional fields before saving
+        form.instance.expiry_date = expiry_date
+        form.instance.created_by = self.request.user
+        messages.success(self.request, "Contract created successfully, replacing the old one!")  
+
         return super().form_valid(form)
 
-    def form_invalid(self, form):
-        messages.error(self.request, "Error updating contract.")
-        return super().form_invalid(form)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = now().date()
+        next_month = today + timedelta(days=30)
+        context["expiring_contracts"] = Contract.objects.filter(
+            expiry_date__gte=today,  # Expiry date is today or later
+            expiry_date__lte=next_month  # Expiry date is within the next 30 days
+        )
+        return context
 
-class ContractDeleteView(DeleteView):
+class ContractListView(ListView):
     model = Contract
-    template_name = 'contracts/contract_confirm_delete.html'
-    success_url = reverse_lazy('contracts:contract_list')
+    template_name = "contracts/contract_list.html"
+    context_object_name = "contracts"
 
-    def delete(self, request, *args, **kwargs):
-        messages.success(self.request, "Contract deleted successfully.")
-        return super().delete(request, *args, **kwargs)
+    def get_queryset(self):
+        return Contract.objects.filter(is_active=True).order_by("-created_at")
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = now().date()
+        next_month = today + timedelta(days=30)
+        context["expiring_contracts"] = Contract.objects.filter(
+            is_active=True,
+            expiry_date__range=(today, next_month)
+        )
+        return context
 
+class VendorContractManageView(TemplateView):
+    template_name = 'contracts/vendor_contract_manage.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        contract_pk = self.kwargs.get('pk')
+        contract = get_object_or_404(Contract, pk=contract_pk)
+
+
+        context['vendor'] = contract.vendor
+        context['contract'] = contract
+        context['form'] = ContractForm()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        vendor_pk = self.kwargs.get("pk")
+        vendor = get_object_or_404(Vendor, pk=vendor_pk)
+
+        action = request.POST.get("action")
+        file_id = request.POST.get("file_id")
+        contract_id = request.POST.get("contract_id")
+
+        # Update existing file
+        if action == "update_file" and file_id:
+            contract_file = get_object_or_404(ContractFile, id=file_id)
+            new_file = request.FILES.get("file")
+            if new_file:
+                contract_file.file.delete()  # delete old file from storage
+                contract_file.file = new_file
+                contract_file.save()
+                messages.success(request, "File updated successfully.")
+            else:
+                messages.error(request, "No file provided for update.")
+
+        # Delete file
+        elif action == "delete_file" and file_id:
+            contract_file = get_object_or_404(ContractFile, id=file_id)
+            contract_file.file.delete()
+            contract_file.delete()
+            messages.success(request, "File deleted successfully.")
+
+        # Update contract
+        elif action == "update_contract" and contract_id:
+            contract = get_object_or_404(Contract, id=contract_id, vendor=vendor)
+            form = ContractForm(request.POST, instance=contract)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Contract updated successfully.")
+            else:
+                messages.error(request, "Failed to update contract.")
+
+        # Delete contract
+        elif action == "delete_contract" and contract_id:
+            contract = get_object_or_404(Contract, id=contract_id, vendor=vendor)
+            contract.delete()
+            messages.success(request, "Contract deleted successfully.")
+
+                # Handle file upload for existing contract
+        elif action == "add_files" and contract_id:
+            contract = get_object_or_404(Contract, id=contract_id, vendor=vendor)
+            files = request.FILES.getlist("files")
+
+            if files:
+                for file in files:
+                    ContractFile.objects.create(
+                        contract=contract,
+                        file=file,
+                        uploaded_by=request.user  
+                    )
+                messages.success(request, "Files uploaded successfully.")
+            else:
+                messages.error(request, "No files selected to upload.")
+
+        # Add multiple files to contract
+        elif action == "add_files" and contract_id:
+            contract = get_object_or_404(Contract, id=contract_id, vendor=vendor)
+            files = request.FILES.getlist("files")
+            if files:
+                for file in files:
+                    ContractFile.objects.create(contract=contract, file=file)
+                messages.success(request, f"{len(files)} file(s) uploaded successfully.")
+            else:
+                messages.error(request, "No files were selected for upload.")
+
+        return redirect(reverse("contracts:vendor_contract_manage", kwargs={"pk": vendor.pk}))
+
+    
+class VendorContractDeleteView(View):
+    def post(self, request, pk):
+        contract = get_object_or_404(Contract, pk=pk)
+        contract.is_active= False
+        contract.save()
+        
+        messages.success(request, "Contract deleted successfully.")
+
+        return redirect(reverse("contracts:contract_list"))
+
+class ExpiringContractsListView(ListView):
+    model = Contract
+    template_name = "contracts/expiring_contracts.html"
+    context_object_name = "expiring_contracts"
+
+    def get_queryset(self):
+        today = now().date()
+        next_month = today + timedelta(days=30)
+        # Filter contracts expiring within the next 30 days
+        return Contract.objects.filter(
+            is_active=True,
+            expiry_date__gte=today,  # Expiry date is today or later
+            expiry_date__lte=next_month  # Expiry date is within the next 30 days
+        ).order_by("expiry_date")
+    
+
+class InactiveContractsListView(ListView):
+    model = Contract
+    template_name = "contracts/inactive_contracts.html"
+    context_object_name = "inactive_contracts"
+
+    def get_queryset(self):
+        return Contract.objects.filter(
+           is_active=False,
+        ).order_by("-created_at")
+
+
+
+@require_GET
+def check_active_contract(request):
+    vendor_id = request.GET.get('vendor_id')
+    has_active = False
+
+    if vendor_id:
+        has_active = Contract.objects.filter(
+            vendor_id=vendor_id,
+            expiry_date__gte=timezone.now().date()
+        ).exists()
+
+    return JsonResponse({'has_active_contract': has_active})
