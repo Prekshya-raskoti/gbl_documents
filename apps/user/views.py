@@ -62,14 +62,9 @@ class VendorListView(ListView):
         to_date = self.request.GET.get('to_date')
 
         queryset = Vendor.objects.all().order_by('id')
-
-
         if query:
             queryset = queryset.filter(
-                Q(name__icontains=query) |
-                Q(email__icontains=query) |
-                Q(address__icontains=query) |
-                Q(phone__icontains=query)
+                Q(name__icontains=query)
             )
 
         if from_date:
@@ -106,7 +101,6 @@ class VendorUpdateView(UpdateView):
         return response
 class VendorDeleteView(DeleteView):
     model = Vendor
-    template_name = 'user/delete_vendor.html'
     success_url = reverse_lazy('user:user_vendor_list')
 
     def post(self, request, *args, **kwargs):

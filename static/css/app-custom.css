@@ -17,6 +17,61 @@ body {
     margin-top: 15px;
 }
 
+.modal-dialog {
+  max-width: 400px;
+  margin-top: -250px;
+}
+
+.modal-content {
+  border-radius: 8px;
+}
+
+.modal-header {
+  background-color: rgb(48, 47, 47);
+  color: #fff;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-title {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.modal-body {
+  font-size: 1rem;
+  font-weight: bolder;
+  color: #495057;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
 .user-profile-section{
   margin-top: 25px;
 }
