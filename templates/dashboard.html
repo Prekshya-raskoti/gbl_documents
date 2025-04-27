@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block title %}GBL Documents{% endblock title %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <form method="GET" action="{% url 'user:user_vendor_list' %}">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control shadow-sm" placeholder="Search vendors..." aria-label="Search vendors" aria-describedby="search-button">
+                    <button class="btn btn-primary" type="submit" id="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Summary -->
+    <div class="row g-4 mb-5">
+        <!-- Total Vendors -->
+        <div class="col-md-4">
+            <div class="card custom-card-light-primary h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-primary mb-1">Total Vendors</h6>
+                            <h3 class="text-dark fw-bold mb-0">{{ total_vendors }}</h3>
+                        </div>
+                        <div class="ms-3">
+                            <div class="icon bg-primary text-white rounded-circle p-3">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Vendors -->
+        <div class="col-md-4">
+            <div class="card custom-card-light-success h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-success mb-1">Today's Registered</h6>
+                            <h3 class="text-dark fw-bold mb-0">{{ total_vendors_today }}</h3>
+                        </div>
+                        <div class="ms-3">
+                            <div class="icon bg-success text-white rounded-circle p-3">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expiring Vendors -->
+        <div class="col-md-4">
+            <div class="card custom-card-light-warning h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-warning mb-1">Expiring Soon</h6>
+                            <h3 class="text-dark fw-bold mb-0">{{ total_vendors_expiring }}</h3>
+                        </div>
+                        <div class="ms-3">
+                            <div class="icon bg-warning text-white rounded-circle p-3">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Recent Vendors Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Recent Vendors</h5>
+            <a href="{% url 'user:user_vendor_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th>Phone</th>
+                            <th>Created at</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vendor in recent_vendors %}
+                            <tr>
+                                <td>{{ vendor.id }}</td>
+                                <td>{{ vendor.name }}</td>
+                                <td>{{ vendor.email }}</td>
+                                <td>{{ vendor.address }}</td>
+                                <td>{{ vendor.phone }}</td>
+                                <td>{{ vendor.created_at|date:"M d, Y H:i" }}</td>
+                                <td>
+                                    <span class="badge bg-success">Active</span>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    No recent vendors found.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .custom-card-light-primary {
+        background-color: #eaf4ff;
+        border: 1px solid #cfe2ff;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(13, 110, 253, 0.1);
+    }
+
+    .custom-card-light-success {
+        background-color: #e9f7ef;
+        border: 1px solid #d1e7dd;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(25, 135, 84, 0.1);
+    }
+
+    .custom-card-light-warning {
+        background-color: #fff8e1;
+        border: 1px solid #ffeeba;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(255, 193, 7, 0.1);
+    }
+</style>
+{% endblock content %}
