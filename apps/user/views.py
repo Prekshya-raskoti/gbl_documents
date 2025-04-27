@@ -27,12 +27,11 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        now = timezone.now()                # full datetime with time
-        today = now.date()                  # only date part (yyyy-mm-dd)
+        now = timezone.now()                
+        today = now.date()                  
 
         total_vendors = Vendor.objects.count()
 
-        # Vendors registered today
         total_vendors_today = Vendor.objects.filter(
             created_at__date=today
         ).count()
@@ -82,18 +81,21 @@ class LoginView(View):
     
     def redirect_authenticated_user(self, user):
         if user.is_superuser:
-            return redirect(reverse('user:user_vendor_list'))
+            return redirect(reverse('dashboard'))
         elif hasattr(user, 'vendor_profile'):
             return redirect(reverse('user:user_vendor_list'))
         else:
             return redirect(reverse('user:user_vendor_list'))
         
-def logout_view(request):
-    if request.method == 'POST':
+
+class LogoutView(View):
+    def get(self, request, *args, **kwargs):
+        next_url = request.GET.get('next', reverse('dashboard'))
+        return render(request, 'auth/logout_confirm.html', {'next': next_url})
+
+    def post(self, request, *args, **kwargs):
         logout(request)
         return redirect(reverse('login'))
-    else:
-        return render(request, 'auth/logout_confirm.html')
 
 class VendorListView(ListView):
     model = Vendor

@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 
-from apps.user.views import LoginView , logout_view ,  DashboardView
+from apps.user.views import LoginView , LogoutView,  DashboardView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,7 +30,7 @@ urlpatterns = [
     path('documents/', include("apps.documents.urls", namespace= "documents")),
     path('contracts/', include("apps.contracts.urls", namespace= "contracts")),
     path('login/', LoginView.as_view(), name='login'),
-    path('logout/', logout_view, name='logout'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 
 
 ]
