@@ -50,29 +50,65 @@ def logout_view(request):
     else:
         return render(request, 'auth/logout_confirm.html')
 
+# class VendorListView(ListView):
+#     model = Vendor
+#     template_name = 'user/vendor_list.html'
+#     context_object_name = 'vendors'
+#     paginate_by = 5
+
+#     def get_queryset(self):
+#         query = self.request.GET.get('q')
+#         from_date = self.request.GET.get('from_date')
+#         to_date = self.request.GET.get('to_date')
+
+#         queryset = Vendor.objects.all().order_by('id')
+#         if query:
+#             queryset = queryset.filter(
+#                 Q(name__icontains=query)
+#             )
+
+#         if from_date:
+#             queryset = queryset.filter(created_at__date__gte=parse_date(from_date))
+#         if to_date:
+#             queryset = queryset.filter(created_at__date__lte=parse_date(to_date))
+
+#         return queryset
+       
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['all_vendors'] = Vendor.objects.all().order_by('name')
+#         return context
+
+
 class VendorListView(ListView):
     model = Vendor
     template_name = 'user/vendor_list.html'
     context_object_name = 'vendors'
-    paginate_by = 10
-
+    paginate_by = 5
+    
     def get_queryset(self):
         query = self.request.GET.get('q')
         from_date = self.request.GET.get('from_date')
         to_date = self.request.GET.get('to_date')
-
+        
         queryset = Vendor.objects.all().order_by('id')
-        if query:
+        
+        if query and query.strip():
             queryset = queryset.filter(
                 Q(name__icontains=query)
             )
-
+        
         if from_date:
             queryset = queryset.filter(created_at__date__gte=parse_date(from_date))
         if to_date:
             queryset = queryset.filter(created_at__date__lte=parse_date(to_date))
-
+        
         return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['all_vendors'] = Vendor.objects.all().order_by('name')
+        return context
     
 class VendorCreateView(CreateView):
     model = Vendor
