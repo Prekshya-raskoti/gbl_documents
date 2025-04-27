@@ -55,7 +55,7 @@ class ContractCreateView(CreateView):
         # Set additional fields before saving
         form.instance.expiry_date = expiry_date
         form.instance.created_by = self.request.user
-        messages.success(self.request, "Contract created successfully, replacing the old one!")  
+        messages.success(self.request, "Contract created successfully!")  
 
         return super().form_valid(form)
 
@@ -197,7 +197,7 @@ class InactiveContractsListView(ListView):
     def get_queryset(self):
         return Contract.objects.filter(
            is_active=False,
-        ).order_by("-created_at")
+        ).order_by("vendor__name")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
