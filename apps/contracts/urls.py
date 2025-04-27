@@ -20,9 +20,4 @@ urlpatterns = [
     path("inactive/", InactiveContractsListView.as_view(), name="contract_inactive"),
     path('check-active-contract/', check_active_contract, name='check_active_contract'),
 
-
-
-    # path('<int:pk>/', ContractDetailView.as_view(), name='contract_detail'),
-    # path('<int:pk>/update/', ContractUpdateView.as_view(), name='contract_update'),
-    # path('<int:pk>/delete/', ContractDeleteView.as_view(), name='contract_delete'),
 ]
