@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load tz %}
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Vendor Profile: {{ vendor.name }}</h2>
+        <a href="{% url 'user:user_vendor_list' %}" class="btn btn-outline-dark">
+            <i class="fa fa-angle-left"></i> Back
+        </a>
+    </div>
+
+    {# Simple Custom Tabs Navigation with gaps #}
+    <div class="mb-4">
+        <div class="d-flex" role="group" aria-label="Vendor tabs">
+            <button type="button" class="btn btn-secondary px-4 me-2" id="info-tab" data-bs-toggle="tab" data-bs-target="#info">
+                Information
+            </button>
+            <button type="button" class="btn btn-primary px-4 me-2" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents">
+                Documents
+            </button>
+            <button type="button" class="btn btn-primary px-4" id="contracts-tab" data-bs-toggle="tab" data-bs-target="#contracts">
+                Contracts
+            </button>
+        </div>
+    </div>
+
+    {# Tabs Content #}
+    <div class="tab-content" id="vendorTabsContent">
+        <!-- Vendor Information Tab -->
+        <div class="tab-pane fade show active" id="info" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Vendor Information</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>Email:</strong> {{ vendor.email }}</li>
+                        <li class="list-group-item"><strong>Phone:</strong> {{ vendor.phone }}</li>
+                        <li class="list-group-item"><strong>Address:</strong> {{ vendor.address }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {# Documents Tab #}
+        <div class="tab-pane fade" id="documents" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Documents</h5>
+                </div>
+                <div class="card-body">
+                    {% if documents %}
+                        <ul class="list-group">
+                            {% for doc in documents %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ doc.get_document_type_display }}</strong><br>
+                                        <small class="text-muted">Uploaded at: {{ doc.uploaded_at|date:"Y-m-d" }}</small>
+                                    </div>
+                                    <a href="{{ doc.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa fa-eye"></i> View
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-info mb-0">No documents uploaded.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# Contracts Tab #}
+        <div class="tab-pane fade" id="contracts" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Contracts</h5>
+                </div>
+                <div class="card-body">
+                    {% if contracts %}
+                        {% for contract in contracts %}
+                            <div class="border p-3 mb-3 rounded">
+                                <p><strong>Join Date:</strong> {{ contract.join_date }}</p>
+                                <p><strong>Expiry Date:</strong> {{ contract.expiry_date }}</p>
+                                <p><strong>Terms & Conditions:</strong><br>{{ contract.terms_conditions|linebreaksbr }}</p>
+                                <p><strong>Files:</strong></p>
+                                <ul class="list-group">
+                                    {% for file in contract.files.all %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>{{ file.file.name|cut:"contract_files/" }}</span>
+                                            <a href="{{ file.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                <i class="fa fa-eye"></i> View
+                                            </a>
+                                        </li>
+                                    {% empty %}
+                                        <li class="list-group-item">No files.</li>
+                                    {% endfor %}
+                                </ul>                                 
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-info mb-0">No contracts available.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Bootstrap tabs
+        const tabButtons = document.querySelectorAll('[data-bs-toggle="tab"]');
+        
+        // Make sure tabs are clickable and properly initialized
+        tabButtons.forEach(button => {
+            // Ensure proper tab functionality
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                
+                // Get the target tab content
+                const targetSelector = button.getAttribute('data-bs-target');
+                const targetPane = document.querySelector(targetSelector);
+                
+                // Hide all tab panes
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.remove('show', 'active');
+                });
+                
+                // Show the target tab pane
+                targetPane.classList.add('show', 'active');
+                
+                // Update button colors
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('btn-secondary');
+                    btn.classList.add('btn-primary');
+                });
+                
+                // Set active button to secondary color
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-secondary');
+            });
+        });
+    });
+</script>
+{% endblock %}
