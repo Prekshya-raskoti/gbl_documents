@@ -18,6 +18,10 @@ class ContractForm(forms.ModelForm):
             'join_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'expiry_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
+        labels = {
+            'join_date': 'Contract Expiry Date',
+            'expiry_date': 'Contract Expiry Date',
+        }
         
 
     def clean_files(self):
