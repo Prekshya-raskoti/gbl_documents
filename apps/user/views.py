@@ -21,34 +21,61 @@ from apps.contracts.models import Contract
 from datetime import timedelta
 
 
+from django.utils import timezone
+from datetime import timedelta
+from django.views.generic import TemplateView
+
 class DashboardView(TemplateView):
     template_name = 'dashboard.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        now = timezone.now()                
-        today = now.date()                  
+        now = timezone.now()
+        today = now.date()
+
+        filter_param = self.request.GET.get('filter')
 
         total_vendors = Vendor.objects.count()
-
         total_vendors_today = Vendor.objects.filter(
             created_at__date=today
         ).count()
-
         total_vendors_expiring = Contract.objects.filter(
-        expiry_date__gte=today,  
-        expiry_date__lte=today + timedelta(days=30)  
-       ).count()
+            expiry_date__gte=today,
+            expiry_date__lte=today + timedelta(days=30)
+        ).count()
 
+        recent_vendors = Vendor.objects.all().order_by('-created_at')
 
-        recent_vendors = Vendor.objects.all().order_by('-created_at')[:5]
+        if filter_param == 'today':
+            recent_vendors = recent_vendors.filter(
+                created_at__date=today
+            )
+        elif filter_param == 'expiring':
+            expiring_vendor_ids = Contract.objects.filter(
+                expiry_date__gte=today,
+                expiry_date__lte=today + timedelta(days=30)
+            ).values_list('vendor_id', flat=True)
+            recent_vendors = recent_vendors.filter(id__in=expiring_vendor_ids)
+
+        vendors_with_status = []
+        for vendor in recent_vendors:
+            contracts = Contract.objects.filter(vendor=vendor)
+            expiring_soon = contracts.filter(
+                expiry_date__gte=today,
+                expiry_date__lte=today + timedelta(days=30)
+            ).exists()
+
+            vendors_with_status.append({
+                'vendor': vendor,
+                'expiring_soon': expiring_soon
+            })
 
         context.update({
             'total_vendors': total_vendors,
             'total_vendors_today': total_vendors_today,
             'total_vendors_expiring': total_vendors_expiring,
-            'recent_vendors': recent_vendors,
+            'recent_vendors': vendors_with_status,
         })
 
         return context

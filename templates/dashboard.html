@@ -20,57 +20,63 @@
 
     <div class="row g-4 mb-5">
         <div class="col-md-4">
-            <div class="card custom-card-light-primary h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-primary mb-1">Total Vendors</h6>
-                            <h3 class="text-dark fw-bold mb-0">{{ total_vendors }}</h3>
-                        </div>
-                        <div class="ms-3">
-                            <div class="icon bg-primary text-white rounded-circle p-3">
-                                <i class="fas fa-users"></i>
+            <a href="{% url 'user:user_vendor_list' %}?filter=all" class="text-decoration-none">
+                <div class="card custom-card-light-primary h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="text-primary mb-1">Total Vendors</h6>
+                                <h3 class="text-dark fw-bold mb-0">{{ total_vendors }}</h3>
+                            </div>
+                            <div class="ms-3">
+                                <div class="icon bg-primary text-white rounded-circle p-3">
+                                    <i class="fas fa-users"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-4">
-            <div class="card custom-card-light-success h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-success mb-1">Today's Registered</h6>
-                            <h3 class="text-dark fw-bold mb-0">{{ total_vendors_today }}</h3>
-                        </div>
-                        <div class="ms-3">
-                            <div class="icon bg-success text-white rounded-circle p-3">
-                                <i class="fas fa-calendar-day"></i>
+            <a href="{% url 'user:user_vendor_list' %}?filter=today" class="text-decoration-none">
+                <div class="card custom-card-light-success h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="text-success mb-1">Today's Registered</h6>
+                                <h3 class="text-dark fw-bold mb-0">{{ total_vendors_today }}</h3>
+                            </div>
+                            <div class="ms-3">
+                                <div class="icon bg-success text-white rounded-circle p-3">
+                                    <i class="fas fa-calendar-day"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="col-md-4">
-            <div class="card custom-card-light-warning h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-warning mb-1">Expiring Soon</h6>
-                            <h3 class="text-dark fw-bold mb-0">{{ total_vendors_expiring }}</h3>
-                        </div>
-                        <div class="ms-3">
-                            <div class="icon bg-warning text-white rounded-circle p-3">
-                                <i class="fas fa-hourglass-half"></i>
+            <a href="{% url 'user:user_vendor_list' %}?filter=expiring" class="text-decoration-none">
+                <div class="card custom-card-light-warning h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="text-warning mb-1">Expiring Soon</h6>
+                                <h3 class="text-dark fw-bold mb-0">{{ total_vendors_expiring }}</h3>
+                            </div>
+                            <div class="ms-3">
+                                <div class="icon bg-warning text-white rounded-circle p-3">
+                                    <i class="fas fa-hourglass-half"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
     </div>
@@ -95,18 +101,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for vendor in recent_vendors %}
-                            <tr>
-                                <td>{{ vendor.id }}</td>
-                                <td>{{ vendor.name }}</td>
-                                <td>{{ vendor.email }}</td>
-                                <td>{{ vendor.address }}</td>
-                                <td>{{ vendor.phone }}</td>
-                                <td>{{ vendor.created_at|date:"M d, Y H:i" }}</td>
-                                <td>
-                                    <span class="badge bg-success">Active</span>
-                                </td>
-                            </tr>
+                        {% for item in recent_vendors %}
+                            {% with vendor=item.vendor expiring_soon=item.expiring_soon %}
+                                <tr>
+                                    <td>{{ vendor.id }}</td>
+                                    <td>{{ vendor.name }}</td>
+                                    <td>{{ vendor.email }}</td>
+                                    <td>{{ vendor.address }}</td>
+                                    <td>{{ vendor.phone }}</td>
+                                    <td>{{ vendor.created_at|date:"M d, Y H:i" }}</td>
+                                    <td>
+                                        {% if expiring_soon %}
+                                            <span class="badge bg-warning text-dark status-badge">Expiring</span>
+                                        {% else %}
+                                            <span class="badge bg-success status-badge">Active</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endwith %}
                         {% empty %}
                             <tr>
                                 <td colspan="7" class="text-center py-4">
@@ -115,6 +127,7 @@
                             </tr>
                         {% endfor %}
                     </tbody>
+                    
                 </table>
             </div>
         </div>
@@ -123,6 +136,12 @@
 </div>
 
 <style>
+    a.text-decoration-none {
+        color: inherit;
+    }
+    a.text-decoration-none:hover {
+        color: inherit;
+    }
     .icon {
         display: flex;
         align-items: center;
@@ -149,6 +168,12 @@
         border: 1px solid #ffeeba;
         border-radius: 10px;
         box-shadow: 0 2px 6px rgba(255, 193, 7, 0.1);
+    }
+
+    .status-badge {
+        font-size: 14px;
+        padding: 8px 14px;
+        border-radius: 20px;
     }
 </style>
 {% endblock content %}
