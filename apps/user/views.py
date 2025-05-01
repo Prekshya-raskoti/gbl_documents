@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import redirect ,render
-from django.views.generic import ListView, CreateView, DeleteView, UpdateView
+from django.views.generic import ListView, CreateView, DeleteView, UpdateView,  DetailView
 from .models import Vendor
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth import login, logout
@@ -106,5 +106,17 @@ class VendorDeleteView(DeleteView):
     def post(self, request, *args, **kwargs):
         messages.success(self.request, "Vendor has been successfully deleted!")
         return super().post(request, *args, **kwargs)
+    
+class VendorDetailView(DetailView):
+    model = Vendor
+    template_name = 'user/vendor_detail.html'
+    context_object_name = 'vendor'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        vendor = self.object
+        context['documents'] = vendor.documents.all()
+        context['contracts'] = vendor.contracts.filter(is_active=True).prefetch_related('files')
+        return context
     
     
