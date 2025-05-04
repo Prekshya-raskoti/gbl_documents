@@ -19,7 +19,7 @@ class DocumentListView(ListView):
     def get_queryset(self):
         query = self.request.GET.get('q', '')
 
-        qs = Vendor.objects.filter(documents__isnull=False).distinct().order_by('id')
+        qs = Vendor.objects.filter(documents__isnull=False).distinct().order_by('-created_at')   
 
         if query:
             qs = qs.filter(
