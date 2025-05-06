@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load tz %}
 {% block content %}
+
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">Vendor Profile: {{ vendor.name }}</h2>
@@ -9,16 +10,16 @@
         </a>
     </div>
 
-    {# Simple Custom Tabs Navigation with gaps #}
+    {# Custom Tabs Navigation with button styling #}
     <div class="mb-4">
-        <div class="d-flex" role="group" aria-label="Vendor tabs">
-            <button type="button" class="btn btn-secondary px-4 me-2" id="info-tab" data-bs-toggle="tab" data-bs-target="#info">
+        <div class="d-flex" role="tablist" id="vendorTabs">
+            <button type="button" class="btn btn-primary px-4 me-2 active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" role="tab" aria-controls="info" aria-selected="true">
                 Information
             </button>
-            <button type="button" class="btn btn-primary px-4 me-2" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents">
+            <button type="button" class="btn btn-primary px-4 me-2" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" role="tab" aria-controls="documents" aria-selected="false">
                 Documents
             </button>
-            <button type="button" class="btn btn-primary px-4" id="contracts-tab" data-bs-toggle="tab" data-bs-target="#contracts">
+            <button type="button" class="btn btn-primary px-4" id="contracts-tab" data-bs-toggle="tab" data-bs-target="#contracts" role="tab" aria-controls="contracts" aria-selected="false">
                 Contracts
             </button>
         </div>
@@ -27,7 +28,7 @@
     {# Tabs Content #}
     <div class="tab-content" id="vendorTabsContent">
         <!-- Vendor Information Tab -->
-        <div class="tab-pane fade show active" id="info" role="tabpanel">
+        <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">Vendor Information</h5>
@@ -43,7 +44,7 @@
         </div>
 
         {# Documents Tab #}
-        <div class="tab-pane fade" id="documents" role="tabpanel">
+        <div class="tab-pane" id="documents" role="tabpanel" aria-labelledby="documents-tab">
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">Documents</h5>
@@ -71,7 +72,7 @@
         </div>
 
         {# Contracts Tab #}
-        <div class="tab-pane fade" id="contracts" role="tabpanel">
+        <div class="tab-pane" id="contracts" role="tabpanel" aria-labelledby="contracts-tab">
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">Contracts</h5>
@@ -112,37 +113,32 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize Bootstrap tabs
-        const tabButtons = document.querySelectorAll('[data-bs-toggle="tab"]');
+        const tabTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'));
+        const tabList = tabTriggerList.map(function(tabTriggerEl) {
+            return new bootstrap.Tab(tabTriggerEl);
+        });
+
+        // Set initial button states (info tab is active by default)
+        updateTabButtonStyles();
         
-        // Make sure tabs are clickable and properly initialized
-        tabButtons.forEach(button => {
-            // Ensure proper tab functionality
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                
-                // Get the target tab content
-                const targetSelector = button.getAttribute('data-bs-target');
-                const targetPane = document.querySelector(targetSelector);
-                
-                // Hide all tab panes
-                document.querySelectorAll('.tab-pane').forEach(pane => {
-                    pane.classList.remove('show', 'active');
-                });
-                
-                // Show the target tab pane
-                targetPane.classList.add('show', 'active');
-                
-                // Update button colors
-                tabButtons.forEach(btn => {
-                    btn.classList.remove('btn-secondary');
-                    btn.classList.add('btn-primary');
-                });
-                
-                // Set active button to secondary color
-                button.classList.remove('btn-primary');
-                button.classList.add('btn-secondary');
+        // Handle button styling when tabs are clicked
+        tabTriggerList.forEach(tabTriggerEl => {
+            tabTriggerEl.addEventListener('shown.bs.tab', function(event) {
+                updateTabButtonStyles();
             });
         });
+        
+        // Function to update button styles based on aria-selected state
+        function updateTabButtonStyles() {
+            tabTriggerList.forEach(el => {
+                el.classList.remove('btn-primary', 'btn-tab-active');
+                if (el.getAttribute('aria-selected') === 'true') {
+                    el.classList.add('btn-tab-active');
+                } else {
+                    el.classList.add('btn-primary');
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

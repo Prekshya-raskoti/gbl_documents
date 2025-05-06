@@ -7,8 +7,6 @@
     <div class="d-flex justify-content-between align-items-center">
         <h2>Vendor Contracts</h2>
 
-    
-
         <!-- Notification Bell -->
         <div class="notification-bell" style="position: relative;">
             <button class="btn btn-outline-primary" id="bell-icon" style="font-size: 24px;">
@@ -29,7 +27,7 @@
                     <button type="button" id="close-dropdown" class="btn btn-sm" style="font-size: 14px;" aria-label="Close">
                         <i class="fa fa-times"></i>
                     </button>
-                                    </div>
+                </div>
                 {% if expiring_contracts %}
                     <ul class="list-group list-group-flush">
                         {% for contract in expiring_contracts %}
@@ -50,7 +48,7 @@
 
     <hr>
 
-    <div class="mb-3 gap-3 d-flex w-100">
+    <div class="mb-3 gap-2 d-flex w-100">
         <a href="{% url 'contracts:contract_list' %}" class="btn btn-success">
             Active Contracts
         </a>
@@ -158,19 +156,17 @@ document.addEventListener('DOMContentLoaded', function () {
             dropdown.style.display = 'none';
         }
     });
-});
-</script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-<script>
     $(document).ready(function() {
         $('#vendor_search').select2({
             placeholder: 'Select a vendor',
             allowClear: true
         });
     });
+});
 </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <style>
     .select2-container--default .select2-selection--single {
         height: 38px;
@@ -178,6 +174,6 @@ document.addEventListener('DOMContentLoaded', function () {
         border: 1px solid #ced4da;
         border-radius: 0.375rem;
     }
-    </style>
+</style>
     
 {% endblock %}
