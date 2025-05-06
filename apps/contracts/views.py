@@ -76,16 +76,13 @@ class ContractListView(ListView):
 
     def get_queryset(self):
         query = self.request.GET.get('q')
-        queryset = Contract.objects.all().order_by('-created_at')
+        queryset = Contract.objects.filter(is_active=True).order_by('-created_at')
         if query:
             queryset = queryset.filter(
                 Q(vendor__name__icontains=query)
             )
         return queryset
- 
-
-        # return Contract.objects.filter(is_active=True).order_by("-created_at")
-    
+     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         today = now().date()
