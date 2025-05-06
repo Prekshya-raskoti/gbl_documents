@@ -12,7 +12,7 @@ from django.db.models import Prefetch
 from apps.user.models import Vendor
 from .models import Contract, ContractFile
 from .forms import ContractForm
-
+from django.db.models import Q
 class ContractCreateView(CreateView):
     model = Contract
     form_class = ContractForm
@@ -75,7 +75,16 @@ class ContractListView(ListView):
     context_object_name = "contracts"
 
     def get_queryset(self):
-        return Contract.objects.filter(is_active=True).order_by("-created_at")
+        query = self.request.GET.get('q')
+        queryset = Contract.objects.all().order_by('-created_at')
+        if query:
+            queryset = queryset.filter(
+                Q(vendor__name__icontains=query)
+            )
+        return queryset
+ 
+
+        # return Contract.objects.filter(is_active=True).order_by("-created_at")
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

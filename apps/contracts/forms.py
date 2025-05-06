@@ -9,6 +9,7 @@ class ContractForm(forms.ModelForm):
         widget=forms.HiddenInput(),  # This will store file paths as a hidden input
         required=False,
     )
+    
 
     class Meta:
         model = Contract
