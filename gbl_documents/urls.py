@@ -20,15 +20,17 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 
-from apps.user.views import LoginView , logout_view
+from apps.user.views import LoginView , LogoutView,  DashboardView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('dashboard/', DashboardView.as_view(), name='dashboard'),  
+
     path('', include("apps.user.urls", namespace= "user")),
     path('documents/', include("apps.documents.urls", namespace= "documents")),
     path('contracts/', include("apps.contracts.urls", namespace= "contracts")),
     path('login/', LoginView.as_view(), name='login'),
-    path('logout/', logout_view, name='logout'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 
 
 ]

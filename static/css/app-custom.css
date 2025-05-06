@@ -17,6 +17,9 @@ body {
     margin-top: 15px;
 }
 
+.d-flex-gap {
+  gap: 10px;
+}
 .modal-dialog {
   max-width: 400px;
   margin-top: -250px;

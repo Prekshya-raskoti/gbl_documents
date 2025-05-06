@@ -1,0 +1,23 @@
+{% for item in recent_vendors %}
+    {% with vendor=item.vendor expiring_soon=item.expiring_soon %}
+        <tr>
+            <td>{{ vendor.id }}</td>
+            <td>{{ vendor.name }}</td>
+            <td>{{ vendor.email }}</td>
+            <td>{{ vendor.address }}</td>
+            <td>{{ vendor.phone }}</td>
+            <td>{{ vendor.created_at|date:"M d, Y H:i" }}</td>
+            <td>
+                {% if expiring_soon %}
+                    <span class="badge bg-danger  status-badge">Expiring</span>
+                {% else %}
+                    <span class="badge bg-success status-badge">Active</span>
+                {% endif %}
+            </td>
+        </tr>
+    {% endwith %}
+{% empty %}
+    <tr>
+        <td colspan="7" class="text-center py-4">No vendors found.</td>
+    </tr>
+{% endfor %}
