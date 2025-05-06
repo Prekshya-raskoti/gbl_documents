@@ -20,7 +20,7 @@ class ContractForm(forms.ModelForm):
             'expiry_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
         }
         labels = {
-            'join_date': 'Contract Expiry Date',
+            'join_date': 'Contract Join Date',
             'expiry_date': 'Contract Expiry Date',
         }
         
