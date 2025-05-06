@@ -64,33 +64,6 @@
 {% include 'pagination.html' %}
 
 <script>
-    {% comment %} function loadVendors(filter) {
-        const searchQuery = document.getElementById('search-name')?.value || '';
-        const statusFilter = document.getElementById('filter-status')?.value || '';
-        
-        const url = `{% url 'user:filter_vendors_ajax' %}?filter=${filter}&q=${searchQuery}&status=${statusFilter}`;
-        
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('vendor-table-body').innerHTML = data.html;
-                
-                const title = filter === 'all' ? 'Total Vendors' :
-                              filter === 'today' ? "Today's Registered Vendors" :
-                              filter === 'expiring' ? 'Expiring Vendors' : 'Recent Vendors';
-                document.getElementById('vendor-table-title').innerText = title;
-                
-                const headerRow = document.querySelector('#vendor-table-body').closest('table').querySelector('thead');
-                if (filter === 'expiring') {
-                    headerRow.children[0].children[5].innerText = 'Expiry Date'; 
-                } else {
-                    headerRow.children[0].children[5].innerText = 'Created At';
-                }
-            })
-            .catch(error => {
-                console.error('Error loading vendor data:', error);
-            });
-    } {% endcomment %}
     function loadVendors(filter) {
         const searchQuery = document.getElementById('search-name')?.value || '';
         const statusFilter = document.getElementById('filter-status')?.value || '';
