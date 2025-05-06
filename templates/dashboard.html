@@ -7,20 +7,22 @@
 
     <div class="row mb-4">
         <div class="col-12">
-            <form method="GET" action="{% url 'user:user_vendor_list' %}">
+            <form id="search-form" method="GET" onsubmit="searchVendors(); return false;">
                 <div class="input-group">
-                    <input type="text" name="q" class="form-control shadow-sm" placeholder="Search vendors..." aria-label="Search vendors" aria-describedby="search-button">
+                    <input type="text" id="search-name" name="q" class="form-control shadow-sm" placeholder="Search by Name, Email, Address..." aria-label="Search vendors" aria-describedby="search-button">
+                    <input type="hidden" id="filter-status" name="status" value="{{ filter_status }}">
                     <button class="btn btn-primary" type="submit" id="search-button">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
             </form>
+            
         </div>
     </div>
 
     <div class="row g-4 mb-5">
         <div class="col-md-4">
-            <a href="{% url 'user:user_vendor_list' %}?filter=all" class="text-decoration-none">
+            <a href="#" onclick="loadVendors('all'); return false;" class="text-decoration-none">
                 <div class="card custom-card-light-primary h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -40,7 +42,7 @@
         </div>
 
         <div class="col-md-4">
-            <a href="{% url 'user:user_vendor_list' %}?filter=today" class="text-decoration-none">
+            <a href="#" onclick="loadVendors('today'); return false;" class="text-decoration-none">
                 <div class="card custom-card-light-success h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -60,7 +62,7 @@
         </div>
 
         <div class="col-md-4">
-            <a href="{% url 'user:user_vendor_list' %}?filter=expiring" class="text-decoration-none">
+            <a href="#" onclick="loadVendors('expiring'); return false;" class="text-decoration-none">
                 <div class="card custom-card-light-warning h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -78,13 +80,12 @@
                 </div>
             </a>
         </div>
-
     </div>
 
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Recent Vendors</h5>
-            <a href="{% url 'user:user_vendor_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            <a href="#" onclick="loadVendors('all'); return false;" class="btn btn-sm btn-outline-primary">View All</a>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -100,9 +101,9 @@
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {% for item in recent_vendors %}
-                            {% with vendor=item.vendor expiring_soon=item.expiring_soon %}
+                    <tbody id="vendor-table-body">
+                        {% for vendor in recent_vendors %}
+                            {% with vendor=vendor.vendor expiring_soon=item.expiring_soon %}
                                 <tr>
                                     <td>{{ vendor.id }}</td>
                                     <td>{{ vendor.name }}</td>
@@ -127,13 +128,43 @@
                             </tr>
                         {% endfor %}
                     </tbody>
-                    
                 </table>
             </div>
         </div>
     </div>
 
 </div>
+
+<script>
+function loadVendors(filter) {
+    fetch("{% url 'user:filter_vendors_ajax' %}?filter=" + filter)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('vendor-table-body').innerHTML = data.html;
+        })
+        .catch(error => {
+            console.error('Error loading vendor data:', error);
+        });
+}
+</script>
+<script>
+    function searchVendors() {
+        const searchQuery = document.getElementById('search-name').value;
+        const statusFilter = document.getElementById('filter-status').value;
+        const filterParam = new URLSearchParams(window.location.search).get('filter') || 'all';
+        const url = `{% url 'user:filter_vendors_ajax' %}?filter=${filterParam}&q=${searchQuery}&status=${statusFilter}`;
+    
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('vendor-table-body').innerHTML = data.html;
+            })
+            .catch(error => {
+                console.error('Error loading vendor data:', error);
+            });
+    }
+    </script>
+    
 
 <style>
     a.text-decoration-none {
@@ -148,28 +179,24 @@
         justify-content: center;
         font-size: 24px;
     }
-
     .custom-card-light-primary {
         background-color: #eaf4ff;
         border: 1px solid #cfe2ff;
         border-radius: 10px;
         box-shadow: 0 2px 6px rgba(13, 110, 253, 0.1);
     }
-
     .custom-card-light-success {
         background-color: #e9f7ef;
         border: 1px solid #d1e7dd;
         border-radius: 10px;
         box-shadow: 0 2px 6px rgba(25, 135, 84, 0.1);
     }
-
     .custom-card-light-warning {
         background-color: #fff8e1;
         border: 1px solid #ffeeba;
         border-radius: 10px;
         box-shadow: 0 2px 6px rgba(255, 193, 7, 0.1);
     }
-
     .status-badge {
         font-size: 14px;
         padding: 8px 14px;

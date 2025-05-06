@@ -19,12 +19,12 @@ from django.views.generic import TemplateView
 from .models import Vendor 
 from apps.contracts.models import Contract
 from datetime import timedelta
-
-
 from django.utils import timezone
 from datetime import timedelta
 from django.views.generic import TemplateView
-
+    
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 class DashboardView(TemplateView):
     template_name = 'dashboard.html'
 
@@ -34,33 +34,35 @@ class DashboardView(TemplateView):
         now = timezone.now()
         today = now.date()
 
-        filter_param = self.request.GET.get('filter')
+        filter_param = self.request.GET.get('filter', 'all')
+        search_query = self.request.GET.get('q', '')
+        status_filter = self.request.GET.get('status', '')
 
-        total_vendors = Vendor.objects.count()
-        total_vendors_today = Vendor.objects.filter(
-            created_at__date=today
-        ).count()
-        total_vendors_expiring = Contract.objects.filter(
-            expiry_date__gte=today,
-            expiry_date__lte=today + timedelta(days=30)
-        ).count()
+        vendors = Vendor.objects.all()
 
-        recent_vendors = Vendor.objects.all().order_by('-created_at')
+        if search_query:
+            vendors = vendors.filter(
+                Q(name__icontains=search_query) |
+                Q(email__icontains=search_query) |
+                Q(address__icontains=search_query) 
+            )
+
+        if status_filter == 'expiring':
+            vendors = vendors.filter(
+                contracts__expiry_date__range=(today, today + timedelta(days=30))
+            )
 
         if filter_param == 'today':
-            recent_vendors = recent_vendors.filter(
-                created_at__date=today
-            )
+            vendors = vendors.filter(created_at__date=today)
         elif filter_param == 'expiring':
             expiring_vendor_ids = Contract.objects.filter(
-                expiry_date__gte=today,
-                expiry_date__lte=today + timedelta(days=30)
+                expiry_date__range=(today, today + timedelta(days=30))
             ).values_list('vendor_id', flat=True)
-            recent_vendors = recent_vendors.filter(id__in=expiring_vendor_ids)
+            vendors = vendors.filter(id__in=expiring_vendor_ids)
 
         vendors_with_status = []
-        for vendor in recent_vendors:
-            contracts = Contract.objects.filter(vendor=vendor)
+        for vendor in vendors:
+            contracts = vendor.contracts.all()  
             expiring_soon = contracts.filter(
                 expiry_date__gte=today,
                 expiry_date__lte=today + timedelta(days=30)
@@ -72,15 +74,60 @@ class DashboardView(TemplateView):
             })
 
         context.update({
-            'total_vendors': total_vendors,
-            'total_vendors_today': total_vendors_today,
-            'total_vendors_expiring': total_vendors_expiring,
+            'total_vendors': vendors.count(),
+            'total_vendors_today': vendors.filter(created_at__date=today).count(),
+            'total_vendors_expiring': vendors.filter(contracts__expiry_date__range=(today, today + timedelta(days=30))).count(),
             'recent_vendors': vendors_with_status,
+            'search_query': search_query,
+            'filter_status': status_filter
         })
 
         return context
+    
+def filter_vendors_ajax(request):
+    now = timezone.now()
+    today = now.date()
+    filter_param = request.GET.get('filter', 'all')
+    search_query = request.GET.get('q', '')
+    status_filter = request.GET.get('status', '')
 
+    vendors = Vendor.objects.all()
 
+    if search_query:
+        vendors = vendors.filter(
+            Q(name__icontains=search_query) |
+            Q(email__icontains=search_query) |
+            Q(address__icontains=search_query)
+        )
+
+    if status_filter == 'expiring':
+        vendors = vendors.filter(
+            contracts__expiry_date__range=(today, today + timedelta(days=30))
+        )
+
+    if filter_param == 'today':
+        vendors = vendors.filter(created_at__date=today)
+    elif filter_param == 'expiring':
+        expiring_vendor_ids = Contract.objects.filter(
+            expiry_date__range=(today, today + timedelta(days=30))
+        ).values_list('vendor_id', flat=True)
+        vendors = vendors.filter(id__in=expiring_vendor_ids)
+
+    vendors_with_status = []
+    for vendor in vendors:
+        contracts = vendor.contracts.all()  
+        expiring_soon = contracts.filter(
+            expiry_date__gte=today,
+            expiry_date__lte=today + timedelta(days=30)
+        ).exists()
+
+        vendors_with_status.append({
+            'vendor': vendor,
+            'expiring_soon': expiring_soon
+        })
+
+    html = render_to_string('partials/vendor_table_rows.html', {'recent_vendors': vendors_with_status})
+    return JsonResponse({'html': html})
 class LoginView(View):
     template_name = 'auth/login.html' 
     
