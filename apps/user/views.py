@@ -181,16 +181,9 @@ class VendorListView(ListView):
         query = self.request.GET.get('q')
         from_date = self.request.GET.get('from_date')
         to_date = self.request.GET.get('to_date')
-<<<<<<< HEAD
-        
-        queryset = Vendor.objects.all().order_by('id')
-        
-        if query and query.strip():
-=======
 
         queryset = Vendor.objects.all().order_by('-created_at')
         if query:
->>>>>>> 316974c484a607ae3e159c49199b7bf1f48471b2
             queryset = queryset.filter(
                 Q(name__icontains=query)
             )

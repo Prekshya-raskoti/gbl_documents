@@ -9,7 +9,7 @@
             <td>{{ vendor.created_at|date:"M d, Y H:i" }}</td>
             <td>
                 {% if expiring_soon %}
-                    <span class="badge bg-warning text-dark status-badge">Expiring</span>
+                    <span class="badge bg-danger  status-badge">Expiring</span>
                 {% else %}
                     <span class="badge bg-success status-badge">Active</span>
                 {% endif %}
