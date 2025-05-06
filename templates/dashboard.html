@@ -35,7 +35,6 @@
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Recent Vendors</h5>
-            <a href="#" onclick="loadVendors('all'); return false;" class="btn btn-sm btn-outline-primary">View All</a>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -61,6 +60,7 @@
     </div>
 
 </div>
+{% include 'pagination.html' %}
 
 <script>
 function loadVendors(filter) {

@@ -10,27 +10,19 @@ from django.views import View
 from django.db.models import Q
 from django.utils.dateparse import parse_date
 
-from django.views.generic import TemplateView
 from django.utils import timezone
 from .models import Vendor
-
-from django.utils import timezone
-from django.views.generic import TemplateView
-from .models import Vendor 
 from apps.contracts.models import Contract
 from datetime import timedelta
-from django.utils import timezone
-from datetime import timedelta
-from django.views.generic import TemplateView
     
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-class DashboardView(TemplateView):
+class DashboardView(ListView):
     template_name = 'dashboard.html'
+    context_object_name = 'recent_vendors'
+    paginate_by = 10
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
+    def get_queryset(self):
         now = timezone.now()
         today = now.date()
 
@@ -44,7 +36,7 @@ class DashboardView(TemplateView):
             vendors = vendors.filter(
                 Q(name__icontains=search_query) |
                 Q(email__icontains=search_query) |
-                Q(address__icontains=search_query) 
+                Q(address__icontains=search_query)
             )
 
         if status_filter == 'expiring':
@@ -62,7 +54,7 @@ class DashboardView(TemplateView):
 
         vendors_with_status = []
         for vendor in vendors:
-            contracts = vendor.contracts.all()  
+            contracts = vendor.contracts.all()
             expiring_soon = contracts.filter(
                 expiry_date__gte=today,
                 expiry_date__lte=today + timedelta(days=30)
@@ -73,16 +65,23 @@ class DashboardView(TemplateView):
                 'expiring_soon': expiring_soon
             })
 
-        context.update({
-            'total_vendors': vendors.count(),
-            'total_vendors_today': vendors.filter(created_at__date=today).count(),
-            'total_vendors_expiring': vendors.filter(contracts__expiry_date__range=(today, today + timedelta(days=30))).count(),
-            'recent_vendors': vendors_with_status,
-            'search_query': search_query,
-            'filter_status': status_filter
-        })
+        return vendors_with_status
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = timezone.now().date()
+
+        context.update({
+            'total_vendors': Vendor.objects.count(),
+            'total_vendors_today': Vendor.objects.filter(created_at__date=today).count(),
+            'total_vendors_expiring': Vendor.objects.filter(
+                contracts__expiry_date__range=(today, today + timedelta(days=30))
+            ).count(),
+            'search_query': self.request.GET.get('q', ''),
+            'filter_status': self.request.GET.get('status', '')
+        })
         return context
+
     
 def filter_vendors_ajax(request):
     now = timezone.now()
@@ -175,7 +174,7 @@ class VendorListView(ListView):
     model = Vendor
     template_name = 'user/vendor_list.html'
     context_object_name = 'vendors'
-    paginate_by = 5
+    paginate_by = 10
     
     def get_queryset(self):
         query = self.request.GET.get('q')
