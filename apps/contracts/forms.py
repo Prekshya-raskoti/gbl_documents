@@ -1,8 +1,5 @@
-from django.core.exceptions import ValidationError
 from django import forms
-from django.utils import timezone
 from .models import Contract, ContractFile
-
 
 class ContractForm(forms.ModelForm):
     files = forms.CharField(
@@ -27,15 +24,14 @@ class ContractForm(forms.ModelForm):
 
     def clean_files(self):
         """Manually process files and store file paths"""
-        files = self.files.getlist("files")  # Get the list of files
+        files = self.files.getlist("files")  
         if not files:
-            return None  # No files selected
+            return None  
         return files
 
     def save(self, commit=True):
         
         contract = super().save(commit=commit)
-        # Manually save the files if any
         files = self.cleaned_data.get("files")
         if files:
             self.save_uploaded_files(contract, files)
