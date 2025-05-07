@@ -7,7 +7,6 @@
     <div class="d-flex justify-content-between align-items-center">
         <h2>Vendor Contracts</h2>
 
-        <!-- Notification Bell -->
         <div class="notification-bell" style="position: relative;">
             <button class="btn btn-outline-primary" id="bell-icon" style="font-size: 24px;">
                 <i class="fa fa-bell"></i>
@@ -19,12 +18,11 @@
                 {% endif %}
             </button>
 
-            <!-- Dropdown -->
             <div id="notification-dropdown" class="dropdown-menu"
                  style="display: none; position: absolute; top: 35px; right: 0; width: 300px; z-index: 1000;">
                 <div class="dropdown-header d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
                     <strong>Expiring Contracts</strong>
-                    <button type="button" id="close-dropdown" class="btn btn-sm" style="font-size: 14px;" aria-label="Close">
+                    <button type="button" id="close-dropdown" class="btn btn-sm" style="font-size: 14px;">
                         <i class="fa fa-times"></i>
                     </button>
                 </div>
@@ -49,24 +47,18 @@
     <hr>
 
     <div class="mb-3 gap-2 d-flex w-100">
-        <a href="{% url 'contracts:contract_list' %}" class="btn btn-success">
-            Active Contracts
-        </a>
-    
-        <a href="{% url 'contracts:contract_expire' %}" class="btn btn-danger">
-            Expiring Contracts
-        </a>
-    
-        <a href="{% url 'contracts:contract_inactive' %}" class="btn btn-warning">
-            Inactive Contracts
-        </a>
-    
+        <a href="{% url 'contracts:contract_list' %}" class="btn btn-success">Active Contracts</a>
+        <a href="{% url 'contracts:contract_expire' %}" class="btn btn-danger">Expiring Contracts</a>
+        <a href="{% url 'contracts:contract_inactive' %}" class="btn btn-warning">Inactive Contracts</a>
+
         <form method="get" class="d-flex align-items-center" style="gap:10px;">
             <div style="width: 250px;">
                 <select class="select2-vendor form-control" id="vendor_search" name="q">
                     <option value="">All Vendors</option>
                     {% for contract in contracts %}
-                        <option value="{{ contract.vendor.name }}" {% if request.GET.q == contract.vendor.name %}selected{% endif %}>{{ contract.vendor.name }}</option>
+                        <option value="{{ contract.vendor.name }}" {% if request.GET.q == contract.vendor.name %}selected{% endif %}>
+                            {{ contract.vendor.name }}
+                        </option>
                     {% endfor %}
                 </select>
             </div>
@@ -76,12 +68,9 @@
         </form>
 
         <div class="ms-auto">
-            <a href="{% url 'contracts:contract_create' %}" class="btn btn-primary">
-                Create New Contract
-            </a>
+            <a href="{% url 'contracts:contract_create' %}" class="btn btn-primary">Create New Contract</a>
         </div>
     </div>
-    
 
     <table class="table">
         <thead>
@@ -104,39 +93,43 @@
                     <td>{{ contract.created_by.username }}</td>
                     <td>
                         <a href="{% url 'contracts:vendor_contract_manage' contract.pk %}" class="btn btn-warning btn-sm">Manage Contracts</a>
-            
-                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ vendor.id }}">
+
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ contract.vendor.id }}">
                             <i class="fa fa-trash"></i>
                         </button>
-                        <div class="modal fade" id="deleteModal{{ vendor.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ vendor.id }}" aria-hidden="true">
+
+                        <div class="modal fade" id="deleteModal{{ contract.vendor.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ contract.vendor.id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="deleteModalLabel{{ vendor.id }}">Delete Vendor</h5>
+                                        <h5 class="modal-title" id="deleteModalLabel{{ contract.vendor.id }}">Delete Vendor</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         Are you sure you want to delete "{{ contract.vendor.name }}"?
                                     </div>
                                     <div class="modal-footer">
-                                        <form method="post" action="{% url 'contracts:vendor_contract_delete' contract.pk  %}">
+                                        <form method="post" action="{% url 'contracts:vendor_contract_delete' contract.pk %}">
                                             {% csrf_token %}
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                             <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                                        </form>    
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
 {% include 'pagination.html' %}
 
-<!-- Notification dropdown toggle script -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const bellIcon = document.getElementById('bell-icon');
@@ -151,30 +144,25 @@ document.addEventListener('DOMContentLoaded', function () {
         dropdown.style.display = 'none';
     });
 
-    // Close dropdown if clicked outside
     document.addEventListener('click', function (event) {
         if (!event.target.closest('.notification-bell')) {
             dropdown.style.display = 'none';
         }
     });
 
-    $(document).ready(function() {
-        $('#vendor_search').select2({
-            placeholder: 'Select a vendor',
-            allowClear: true
-        });
+    $('#vendor_search').select2({
+        placeholder: 'Select a vendor',
+        allowClear: true
     });
 });
 </script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <style>
-    .select2-container--default .select2-selection--single {
-        height: 38px;
-        padding: 6px 12px;
-        border: 1px solid #ced4da;
-        border-radius: 0.375rem;
-    }
+.select2-container--default .select2-selection--single {
+    height: 38px;
+    padding: 6px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+}
 </style>
-    
 {% endblock %}
