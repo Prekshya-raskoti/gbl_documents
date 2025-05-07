@@ -96,7 +96,11 @@
         {% endif %}
     </div>
 </div>
+{% include 'pagination.html' %}
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const bellIcon = document.getElementById('bell-icon');

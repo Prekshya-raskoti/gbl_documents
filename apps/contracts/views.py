@@ -73,6 +73,7 @@ class ContractListView(ListView):
     model = Contract
     template_name = "contracts/contract_list.html"
     context_object_name = "contracts"
+    paginate_by = 10
 
     def get_queryset(self):
         query = self.request.GET.get('q')
@@ -183,6 +184,7 @@ class ExpiringContractsListView(ListView):
     model = Contract
     template_name = "contracts/expiring_contracts.html"
     context_object_name = "expiring_contracts"
+    paginate_by = 10
 
     def get_queryset(self):
         today = now().date()
@@ -199,6 +201,7 @@ class InactiveContractsListView(ListView):
     model = Contract
     template_name = "contracts/inactive_contracts.html"
     context_object_name = "inactive_contracts"
+    paginate_by = 10
 
     def get_queryset(self):
         return Contract.objects.filter(
