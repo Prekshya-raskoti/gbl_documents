@@ -30,7 +30,7 @@ class DashboardView(ListView):
         search_query = self.request.GET.get('q', '')
         status_filter = self.request.GET.get('status', '')
 
-        vendors = Vendor.objects.all()
+        vendors = Vendor.objects.all().order_by('-created_at')
 
         if search_query:
             vendors = vendors.filter(
@@ -55,14 +55,15 @@ class DashboardView(ListView):
         vendors_with_status = []
         for vendor in vendors:
             contracts = vendor.contracts.all()
-            expiring_soon = contracts.filter(
+            expiring_contract = contracts.filter(
                 expiry_date__gte=today,
                 expiry_date__lte=today + timedelta(days=30)
-            ).exists()
+            ).first()
 
             vendors_with_status.append({
                 'vendor': vendor,
-                'expiring_soon': expiring_soon
+                'expiring_soon': bool(expiring_contract),
+                'contract': expiring_contract  
             })
 
         return vendors_with_status
@@ -81,16 +82,17 @@ class DashboardView(ListView):
             'filter_status': self.request.GET.get('status', '')
         })
         return context
-
     
+
 def filter_vendors_ajax(request):
     now = timezone.now()
     today = now.date()
+
     filter_param = request.GET.get('filter', 'all')
     search_query = request.GET.get('q', '')
     status_filter = request.GET.get('status', '')
 
-    vendors = Vendor.objects.all()
+    vendors = Vendor.objects.all().order_by('-created_at')
 
     if search_query:
         vendors = vendors.filter(
@@ -110,19 +112,20 @@ def filter_vendors_ajax(request):
         expiring_vendor_ids = Contract.objects.filter(
             expiry_date__range=(today, today + timedelta(days=30))
         ).values_list('vendor_id', flat=True)
-        vendors = vendors.filter(id__in=expiring_vendor_ids)
+        vendors = vendors.filter(id__in=expiring_vendor_ids).order_by('-created_at')
 
     vendors_with_status = []
     for vendor in vendors:
-        contracts = vendor.contracts.all()  
-        expiring_soon = contracts.filter(
+        contracts = vendor.contracts.all()
+        expiring_contract = contracts.filter(
             expiry_date__gte=today,
             expiry_date__lte=today + timedelta(days=30)
-        ).exists()
+        ).first()
 
         vendors_with_status.append({
             'vendor': vendor,
-            'expiring_soon': expiring_soon
+            'expiring_soon': bool(expiring_contract),
+            'contract': expiring_contract  
         })
 
     html = render_to_string('partials/vendor_table_rows.html', {'recent_vendors': vendors_with_status})

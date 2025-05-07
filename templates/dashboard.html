@@ -47,7 +47,8 @@
                             <th>Email</th>
                             <th>Address</th>
                             <th>Phone</th>
-                            <th>Created at</th>
+                            <th id="created-at-header">Created at</th>
+                            <th id="expiry-date-header" class="expiry-date-column">Expiry Date</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -76,25 +77,17 @@
                 document.getElementById('vendor-table-body').innerHTML = data.html;
                 
                 const title = filter === 'all' ? 'Total Vendors' :
-                              filter === 'today' ? "Today's Registered Vendors" :
-                              filter === 'expiring' ? 'Expiring Vendors' : 'Recent Vendors';
+                              filter === 'today' ? "Newly Registered Vendors" :
+                              filter === 'expiring' ? 'Expiring Vendor Contracts' : 'Recent Vendors';
                 document.getElementById('vendor-table-title').innerText = title;
-                
-                const headerRow = document.querySelector('#vendor-table-body').closest('table').querySelector('thead');
-                if (filter === 'expiring') {
-                    headerRow.children[0].children[5].innerText = 'Expiry Date'; 
-                } else {
-                    headerRow.children[0].children[5].innerText = 'Created At';
-                }
+
+                toggleColumns(filter); 
             })
             .catch(error => {
                 console.error('Error loading vendor data:', error);
             });
     }
     
-    
-</script>
-<script>
     function searchVendors() {
         const searchQuery = document.getElementById('search-name').value;
         const statusFilter = document.getElementById('filter-status').value;
@@ -105,12 +98,42 @@
             .then(response => response.json())
             .then(data => {
                 document.getElementById('vendor-table-body').innerHTML = data.html;
+                toggleColumns(filterParam); 
             })
             .catch(error => {
                 console.error('Error loading vendor data:', error);
             });
     }
-    </script>
+
+    function toggleColumns(filter) {
+        const createdAtColumn = document.querySelectorAll('.created-at-column');
+        const expiryDateColumn = document.querySelectorAll('.expiry-date-column');
+        const createdAtHeader = document.getElementById('created-at-header');
+        const expiryDateHeader = document.getElementById('expiry-date-header');
+
+        if (filter === 'expiring') {
+            createdAtColumn.forEach(cell => cell.style.display = 'none');
+            expiryDateColumn.forEach(cell => cell.style.display = 'table-cell');
+            createdAtHeader.style.display = 'none';
+            expiryDateHeader.style.display = 'table-cell';
+        } else if (filter === 'all' || filter === 'today') {
+            createdAtColumn.forEach(cell => cell.style.display = 'table-cell');
+            expiryDateColumn.forEach(cell => cell.style.display = 'none');
+            createdAtHeader.style.display = 'table-cell';
+            expiryDateHeader.style.display = 'none';
+        } else {
+            createdAtColumn.forEach(cell => cell.style.display = 'table-cell');
+            expiryDateColumn.forEach(cell => cell.style.display = 'none');
+            createdAtHeader.style.display = 'table-cell';
+            expiryDateHeader.style.display = 'none';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        toggleColumns('recent');
+    });
+</script>
+
 <style>
     a.text-decoration-none {
         color: inherit;
