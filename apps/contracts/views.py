@@ -107,7 +107,6 @@ class VendorContractManageView(TemplateView):
             pk=contract_pk
         )        
 
-
         context['vendor'] = contract.vendor
         context['contract'] = contract
         context['form'] = ContractForm()

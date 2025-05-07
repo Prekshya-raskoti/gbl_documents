@@ -30,9 +30,13 @@
         <!-- Vendor Information Tab -->
         <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex gap-5">
                     <h5 class="mb-0">Vendor Information</h5>
+                    <a href="{% url 'user:edit_vendor' vendor.id %}" class="btn btn-warning btn-sm">
+                        <i class="fa fa-edit"></i>
+                    </a>
                 </div>
+                
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><strong>Email:</strong> {{ vendor.email }}</li>
@@ -41,13 +45,17 @@
                     </ul>
                 </div>
             </div>
+            
         </div>
 
         {# Documents Tab #}
         <div class="tab-pane" id="documents" role="tabpanel" aria-labelledby="documents-tab">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex gap-5">
                     <h5 class="mb-0">Documents</h5>
+                    <a href="{% url 'documents:vendor_document_manage' vendor.pk %}" class="btn btn-warning btn-sm">
+                        Manage Documents
+                    </a>
                 </div>
                 <div class="card-body">
                     {% if documents %}
@@ -74,8 +82,13 @@
         {# Contracts Tab #}
         <div class="tab-pane" id="contracts" role="tabpanel" aria-labelledby="contracts-tab">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex gap-5 ">
                     <h5 class="mb-0">Contracts</h5>
+                    {%if active_contract_id %}
+                    <a href="{% url 'contracts:vendor_contract_manage' active_contract_id %}" class="btn btn-warning btn-sm">Manage Contracts</a>
+                    {% else %}
+                        <span class="text-muted">No active contract</span>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     {% if contracts %}

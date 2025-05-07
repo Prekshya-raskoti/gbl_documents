@@ -250,6 +250,9 @@ class VendorDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         vendor = self.object
+        active_contract = vendor.contracts.filter(is_active=True).first()
+        active_contract_id = active_contract.id if active_contract else None
+        context['active_contract_id'] = active_contract_id
         context['documents'] = vendor.documents.all()
         context['contracts'] = vendor.contracts.filter(is_active=True).prefetch_related('files')
         return context
