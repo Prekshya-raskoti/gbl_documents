@@ -41,6 +41,7 @@ class DashboardView(ListView):
 
         if status_filter == 'expiring':
             vendors = vendors.filter(
+                is_active=True,
                 contracts__expiry_date__range=(today, today + timedelta(days=30))
             )
 
@@ -48,6 +49,7 @@ class DashboardView(ListView):
             vendors = vendors.filter(created_at__date=today)
         elif filter_param == 'expiring':
             expiring_vendor_ids = Contract.objects.filter(
+                is_active=True,
                 expiry_date__range=(today, today + timedelta(days=30))
             ).values_list('vendor_id', flat=True)
             vendors = vendors.filter(id__in=expiring_vendor_ids)
@@ -56,6 +58,7 @@ class DashboardView(ListView):
         for vendor in vendors:
             contracts = vendor.contracts.all()
             expiring_contract = contracts.filter(
+                is_active=True,
                 expiry_date__gte=today,
                 expiry_date__lte=today + timedelta(days=30)
             ).first()
@@ -76,6 +79,7 @@ class DashboardView(ListView):
             'total_vendors': Vendor.objects.count(),
             'total_vendors_today': Vendor.objects.filter(created_at__date=today).count(),
             'total_vendors_expiring': Vendor.objects.filter(
+                contracts__is_active=True,
                 contracts__expiry_date__range=(today, today + timedelta(days=30))
             ).count(),
             'search_query': self.request.GET.get('q', ''),
@@ -103,6 +107,7 @@ def filter_vendors_ajax(request):
 
     if status_filter == 'expiring':
         vendors = vendors.filter(
+            is_active=True,
             contracts__expiry_date__range=(today, today + timedelta(days=30))
         )
 
@@ -110,6 +115,7 @@ def filter_vendors_ajax(request):
         vendors = vendors.filter(created_at__date=today)
     elif filter_param == 'expiring':
         expiring_vendor_ids = Contract.objects.filter(
+            is_active=True,
             expiry_date__range=(today, today + timedelta(days=30))
         ).values_list('vendor_id', flat=True)
         vendors = vendors.filter(id__in=expiring_vendor_ids).order_by('-created_at')
@@ -118,6 +124,7 @@ def filter_vendors_ajax(request):
     for vendor in vendors:
         contracts = vendor.contracts.all()
         expiring_contract = contracts.filter(
+            is_active=True,
             expiry_date__gte=today,
             expiry_date__lte=today + timedelta(days=30)
         ).first()

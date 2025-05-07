@@ -27,7 +27,7 @@
             {% include 'partials/dashboard_card.html' with filter='today' card_class='custom-card-light-success' title_class='text-success' title="Today's Registered" count=total_vendors_today icon_bg='bg-success' icon='fas fa-calendar-day' %}
         </div>
         <div class="col-md-4">
-            {% include 'partials/dashboard_card.html' with filter='expiring' card_class='custom-card-light-warning' title_class='text-danger' title='Expiring Contracts' count=total_vendors_expiring icon_bg='bg-danger' icon='fas fa-hourglass-half' %}
+            {% include 'partials/dashboard_card.html' with filter='expiring' card_class='custom-card-light-danger' title_class='text-danger' title='Expiring Contracts' count=total_vendors_expiring icon_bg='bg-danger' icon='fas fa-hourglass-half' %}
         </div>
     </div>
     
