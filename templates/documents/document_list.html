@@ -31,8 +31,7 @@
         <tr>
             <th>S.N.</th>
             <th>Vendor</th>
-            <th>Uploaded At</th>
-            <th>Updated At</th>
+            
             <th>Actions</th>
 
         </tr>
@@ -45,9 +44,7 @@
                 <a href="{% url 'user:vendor_detail' vendor.id %}" class="text-decoration-none" style="color: inherit;">
                     {{ vendor.name }}
                 </a>
-            </td> 
-            
-            <td>              
+            </td>              
             <td>
                 <a href="{% url 'documents:vendor_document_manage' vendor.pk %}" class="btn btn-warning btn-sm">
                     Manage Documents
