@@ -223,4 +223,6 @@ def check_active_contract(request):
             is_active=True,
         ).exists()
 
+    print(has_active)
+
     return JsonResponse({'has_active_contract': has_active})

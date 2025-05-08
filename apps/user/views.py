@@ -261,4 +261,4 @@ class VendorDetailView(DetailView):
         context['contracts'] = vendor.contracts.filter(is_active=True).prefetch_related('files')
         return context
     
-    
+  

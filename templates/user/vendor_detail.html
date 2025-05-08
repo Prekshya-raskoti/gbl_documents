@@ -13,13 +13,16 @@
     {# Custom Tabs Navigation with button styling #}
     <div class="mb-4">
         <div class="d-flex" role="tablist" id="vendorTabs">
-            <button type="button" class="btn btn-primary px-4 me-2 active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" role="tab" aria-controls="info" aria-selected="true">
+            <button type="button" class="btn btn-primary px-4 me-2 active" id="info-tab" data-bs-toggle="tab"
+                data-bs-target="#info" role="tab" aria-controls="info" aria-selected="true">
                 Information
             </button>
-            <button type="button" class="btn btn-primary px-4 me-2" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" role="tab" aria-controls="documents" aria-selected="false">
+            <button type="button" class="btn btn-primary px-4 me-2" id="documents-tab" data-bs-toggle="tab"
+                data-bs-target="#documents" role="tab" aria-controls="documents" aria-selected="false">
                 Documents
             </button>
-            <button type="button" class="btn btn-primary px-4" id="contracts-tab" data-bs-toggle="tab" data-bs-target="#contracts" role="tab" aria-controls="contracts" aria-selected="false">
+            <button type="button" class="btn btn-primary px-4" id="contracts-tab" data-bs-toggle="tab"
+                data-bs-target="#contracts" role="tab" aria-controls="contracts" aria-selected="false">
                 Contracts
             </button>
         </div>
@@ -35,7 +38,7 @@
                         Edit
                     </a>
                 </div>
-                
+
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><strong>Email:</strong> {{ vendor.email }}</li>
@@ -44,7 +47,7 @@
                     </ul>
                 </div>
             </div>
-            
+
         </div>
 
         {# Documents Tab #}
@@ -58,21 +61,21 @@
                 </div>
                 <div class="card-body">
                     {% if documents %}
-                        <ul class="list-group">
-                            {% for doc in documents %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>{{ doc.get_document_type_display }}</strong><br>
-                                        <small class="text-muted">Uploaded at: {{ doc.uploaded_at|date:"Y-m-d" }}</small>
-                                    </div>
-                                    <a href="{{ doc.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                        <i class="fa fa-eye"></i> View
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
+                    <ul class="list-group">
+                        {% for doc in documents %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ doc.get_document_type_display }}</strong><br>
+                                <small class="text-muted">Uploaded at: {{ doc.uploaded_at|date:"Y-m-d" }}</small>
+                            </div>
+                            <a href="{{ doc.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="fa fa-eye"></i> View
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
                     {% else %}
-                        <div class="alert alert-info mb-0">No documents uploaded.</div>
+                    <div class="alert alert-info mb-0">No documents uploaded.</div>
                     {% endif %}
                 </div>
             </div>
@@ -84,35 +87,36 @@
                 <div class="card-header d-flex gap-5 ">
                     <h5 class="mb-0">Contracts</h5>
                     {%if active_contract_id %}
-                    <a href="{% url 'contracts:vendor_contract_manage' active_contract_id %}" class="btn btn-warning btn-sm">Manage Contracts</a>
+                    <a href="{% url 'contracts:vendor_contract_manage' active_contract_id %}"
+                        class="btn btn-warning btn-sm">Manage Contracts</a>
                     {% else %}
-                        <span class="text-muted">No active contract</span>
+                    <span class="text-muted">No active contract</span>
                     {% endif %}
                 </div>
                 <div class="card-body">
                     {% if contracts %}
-                        {% for contract in contracts %}
-                            <div class="border p-3 mb-3 rounded">
-                                <p><strong>Join Date:</strong> {{ contract.join_date }}</p>
-                                <p><strong>Expiry Date:</strong> {{ contract.expiry_date }}</p>
-                                <p><strong>Terms & Conditions:</strong><br>{{ contract.terms_conditions|linebreaksbr }}</p>
-                                <p><strong>Files:</strong></p>
-                                <ul class="list-group">
-                                    {% for file in contract.files.all %}
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span>{{ file.file.name|cut:"contract_files/" }}</span>
-                                            <a href="{{ file.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
-                                                <i class="fa fa-eye"></i> View
-                                            </a>
-                                        </li>
-                                    {% empty %}
-                                        <li class="list-group-item">No files.</li>
-                                    {% endfor %}
-                                </ul>                                 
-                            </div>
-                        {% endfor %}
+                    {% for contract in contracts %}
+                    <div class="border p-3 mb-3 rounded">
+                        <p><strong>Join Date:</strong> {{ contract.join_date }}</p>
+                        <p><strong>Expiry Date:</strong> {{ contract.expiry_date }}</p>
+                        <p><strong>Terms & Conditions:</strong><br>{{ contract.terms_conditions|linebreaksbr }}</p>
+                        <p><strong>Files:</strong></p>
+                        <ul class="list-group">
+                            {% for file in contract.files.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ file.file.name|cut:"contract_files/" }}</span>
+                                <a href="{{ file.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="fa fa-eye"></i> View
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item">No files.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endfor %}
                     {% else %}
-                        <div class="alert alert-info mb-0">No contracts available.</div>
+                    <div class="alert alert-info mb-0">No contracts available.</div>
                     {% endif %}
                 </div>
             </div>
@@ -123,23 +127,23 @@
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Initialize Bootstrap tabs
         const tabTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'));
-        const tabList = tabTriggerList.map(function(tabTriggerEl) {
+        const tabList = tabTriggerList.map(function (tabTriggerEl) {
             return new bootstrap.Tab(tabTriggerEl);
         });
 
         // Set initial button states (info tab is active by default)
         updateTabButtonStyles();
-        
+
         // Handle button styling when tabs are clicked
         tabTriggerList.forEach(tabTriggerEl => {
-            tabTriggerEl.addEventListener('shown.bs.tab', function(event) {
+            tabTriggerEl.addEventListener('shown.bs.tab', function (event) {
                 updateTabButtonStyles();
             });
         });
-        
+
         // Function to update button styles based on aria-selected state
         function updateTabButtonStyles() {
             tabTriggerList.forEach(el => {
