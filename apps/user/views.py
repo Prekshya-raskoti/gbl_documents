@@ -1,22 +1,24 @@
+from datetime import timedelta
+
 from django.contrib import messages
-from django.shortcuts import redirect ,render
-from django.views.generic import ListView, CreateView, DeleteView, UpdateView,  DetailView
-from .models import Vendor
-from django.urls import reverse_lazy, reverse
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import VendorForm
-from django.views import View
 from django.db.models import Q
-from django.utils.dateparse import parse_date
-
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.dateparse import parse_date
+from django.views import View
+from django.views.generic import (
+    ListView, CreateView, DeleteView, UpdateView, DetailView
+)
+
+from .forms import VendorForm
 from .models import Vendor
 from apps.contracts.models import Contract
-from datetime import timedelta
-    
-from django.http import JsonResponse
-from django.template.loader import render_to_string
+
 class DashboardView(ListView):
     template_name = 'dashboard.html'
     context_object_name = 'recent_vendors'
@@ -137,6 +139,7 @@ def filter_vendors_ajax(request):
 
     html = render_to_string('partials/vendor_table_rows.html', {'recent_vendors': vendors_with_status})
     return JsonResponse({'html': html})
+
 class LoginView(View):
     template_name = 'auth/login.html' 
     
@@ -234,6 +237,7 @@ class VendorUpdateView(UpdateView):
         response = super().form_valid(form)
         messages.success(self.request, "Vendor details updated successfully!")
         return response
+    
 class VendorDeleteView(DeleteView):
     model = Vendor
     success_url = reverse_lazy('user:user_vendor_list')

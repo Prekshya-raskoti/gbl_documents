@@ -16,10 +16,8 @@
                         <form method="POST" enctype="multipart/form-data" id="document-form">
                             {% csrf_token %}
 
-                            <!-- Vendor field -->
                             {{ form.vendor|as_crispy_field }}
                             
-
                             <h3 class="mt-3">Documents</h3>
 
                             <div id="document-fields-container">
@@ -33,13 +31,11 @@
                                 </div>
                             </div>
 
-                            <!-- Buttons -->
                             <div class="form-group d-flex justify-content-between mt-4">
                                 <button type="button" class="btn btn-secondary" id="add-more-btn" onclick="handleAddMore()">Add more</button>
                                 <button type="submit" class="btn btn-primary">Upload Document</button>
                             </div>
 
-                            <!-- Warning message -->
                             <div id="file-warning" class="text-danger mt-2" style="display: none;">
                                 Please upload files for all existing fields before adding more.
                             </div>
