@@ -7,6 +7,7 @@ from apps.user.models import Vendor
 from .models import Document
 from .forms import DocumentForm
 from django.db.models import Q
+from django.http import JsonResponse
 
 
 class DocumentListView(ListView):
@@ -147,4 +148,19 @@ class VendorDocumentDeleteView(View):
         else:
             messages.info(request, f"No documents found for vendor: {vendor.name}.")
 
-        return redirect('documents:document_list') 
+        return redirect('documents:document_list')
+
+class CheckDocumentExistsView(View):
+    def get(self, request):
+        vendor_id = request.GET.get('vendor_id')
+        document_type = request.GET.get('document_type_id')
+        
+        if not vendor_id or not document_type:
+            return JsonResponse({'error': 'Missing required parameters'}, status=400)
+            
+        exists = Document.objects.filter(
+            vendor_id=vendor_id,
+            document_type=document_type
+        ).exists()
+        
+        return JsonResponse({'exists': exists}) 
