@@ -1,9 +1,8 @@
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.views import View
-from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView, TemplateView
+from django.views.generic import ListView, CreateView, DeleteView, TemplateView
 from django.urls import reverse, reverse_lazy
-from django.http import JsonResponse
 from apps.user.models import Vendor
 from .models import Document
 from .forms import DocumentForm
@@ -40,13 +39,11 @@ class DocumentCreateView(CreateView):
     success_url = reverse_lazy('documents:document_list')
 
     def post(self, request, *args, **kwargs):
-        # Get vendor from the main form
         vendor = request.POST.get('vendor')
         if not vendor:
             messages.error(request, "Vendor is required.")
             return self.form_invalid(self.get_form())
 
-        # Create a list to hold created documents
         created_documents = []
 
         # Loop through POST data to find all dynamic fields
@@ -59,7 +56,6 @@ class DocumentCreateView(CreateView):
             file = request.FILES.get(file_key)
 
             if not document_type and not file:
-                # No more fields to process
                 break
 
             if document_type and file:
@@ -84,7 +80,6 @@ class DocumentDeleteView(DeleteView):
     model = Document
     
     def get_success_url(self):
-        # Redirect to the document detail page of the vendor
         document = self.get_object()
         vendor = document.vendor
         return reverse('documents:vendor_document_manage', kwargs={'pk': vendor.pk})
@@ -98,14 +93,12 @@ class VendorDocumentManageView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get the vendor using the pk from the URL
         vendor_pk = self.kwargs.get('pk')
         vendor = get_object_or_404(Vendor, pk=vendor_pk)
-        # Get all documents of the vendor
         context['vendor'] = vendor
         context['vendor_documents'] = Document.objects.filter(vendor=vendor).order_by('uploaded_at')
-        context['form'] = DocumentForm()  # Form for adding/updating documents
-        context['document_type_choices'] = Document.DOCUMENT_TYPES  # Add this line
+        context['form'] = DocumentForm() 
+        context['document_type_choices'] = Document.DOCUMENT_TYPES  
         return context
 
     def post(self, request, *args, **kwargs):
@@ -141,9 +134,6 @@ class VendorDocumentManageView(TemplateView):
                 messages.error(request, "There was an error with the form. Please try again.")
 
         return redirect(reverse('documents:vendor_document_manage', kwargs={'pk': vendor.pk}))
-    
-    
-  
 
 class VendorDocumentDeleteView(View):
     def post(self, request, pk):

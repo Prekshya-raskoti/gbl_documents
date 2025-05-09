@@ -9,8 +9,7 @@ from .views import (
     check_active_contract,
 )
 
-app_name = 'contracts'  # Optional: for namespacing URL names
-
+app_name = 'contracts'  
 urlpatterns = [
     path('create/', ContractCreateView.as_view(), name='contract_create'),
     path('list/', ContractListView.as_view(), name='contract_list'),
