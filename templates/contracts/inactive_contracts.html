@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 {% load tz %}
+{% load static %}
+
+{% block title %}Inactive Contracts{% endblock %}
+
 
 {% block content %}
 <div class="container-fluid">
@@ -40,16 +44,19 @@
     </div>
 
     <hr>
-    <div class="mb-3 gap-3 d-flex w-100">
-        <a href="{% url 'contracts:contract_list' %}" class="btn btn-success">
+    <div class="mb-3 gap-2 d-flex w-100">
+        <a href="{% url 'contracts:contract_list' %}" 
+           class="btn {% if request.resolver_match.url_name == 'contract_list' %}btn-success{% else %}btn-outline-success btn-muted{% endif %}">
             Active Contracts
         </a>
     
-        <a href="{% url 'contracts:contract_expire' %}" class="btn btn-danger">
+        <a href="{% url 'contracts:contract_expire' %}" 
+           class="btn {% if request.resolver_match.url_name == 'contract_expire' %}btn-danger{% else %}btn-outline-danger btn-muted{% endif %}">
             Expiring Contracts
         </a>
     
-        <a href="{% url 'contracts:contract_inactive' %}" class="btn btn-warning">
+        <a href="{% url 'contracts:contract_inactive' %}" 
+           class="btn {% if request.resolver_match.url_name == 'contract_inactive' %}btn-warning{% else %}btn-outline-warning btn-muted{% endif %}">
             Inactive Contracts
         </a>
     

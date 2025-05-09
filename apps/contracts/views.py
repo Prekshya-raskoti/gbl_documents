@@ -189,12 +189,23 @@ class ExpiringContractsListView(ListView):
     def get_queryset(self):
         today = now().date()
         next_month = today + timedelta(days=30)
-        # Filter contracts expiring within the next 30 days
-        return Contract.objects.filter(
+        qs = Contract.objects.filter(
             is_active=True,
-            expiry_date__gte=today,  # Expiry date is today or later
-            expiry_date__lte=next_month  # Expiry date is within the next 30 days
+            expiry_date__gte=today,
+            expiry_date__lte=next_month
         ).order_by("expiry_date")
+
+        q = self.request.GET.get("q")
+        if q:
+            qs = qs.filter(vendor__name__icontains=q)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        expiring_contracts = self.get_queryset()
+        context['contracts'] = expiring_contracts.select_related('vendor')
+        return context
+
     
 
 class InactiveContractsListView(ListView):
