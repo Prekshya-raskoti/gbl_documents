@@ -4,11 +4,6 @@
 
 {% block title %}Expiring Contracts{% endblock %}
 
-{% block styles %}
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="{% static 'css/custom.css' %}">
-{% endblock %}
-
 {% block content %}
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center">
@@ -152,6 +147,7 @@
         placeholder: 'Select a vendor',
         allowClear: true
     });
+}); 
 </script>
     <style>
         .select2-container--default .select2-selection--single {
