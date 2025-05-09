@@ -96,7 +96,11 @@
                     {% for contract in expiring_contracts %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ contract.vendor.name }}</td>
+                            <td>
+                                <a href="{% url 'user:vendor_detail' contract.vendor.id %}" class="text-decoration-none" style="color: inherit;">
+                                    {{ contract.vendor.name }}
+                                </a>
+                            </td>   
                             <td>{{ contract.join_date }}</td>
                             <td>{{ contract.expiry_date }}</td>
                             <td>{{ contract.created_by.username }}</td>

@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load tz %}
 
-
 {% block content %}
 <h2>Vendor Documents</h2>
 
@@ -32,6 +31,7 @@
         <tr>
             <th>S.N.</th>
             <th>Vendor</th>
+            
             <th>Actions</th>
 
         </tr>
@@ -40,8 +40,11 @@
         {% for vendor in vendors %}
         <tr>
             <td>{{ forloop.counter|add:page_obj.start_index|add:"-1" }}</td> 
-            <td>{{ vendor.name }}</td>
-
+            <td>
+                <a href="{% url 'user:vendor_detail' vendor.id %}" class="text-decoration-none" style="color: inherit;">
+                    {{ vendor.name }}
+                </a>
+            </td>              
             <td>
                 <a href="{% url 'documents:vendor_document_manage' vendor.pk %}" class="btn btn-warning btn-sm">
                     Manage Documents

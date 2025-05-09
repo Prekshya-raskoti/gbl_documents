@@ -64,17 +64,17 @@
         {% for vendor in vendors %}
             <tr>
                 <td>{{ forloop.counter|add:page_obj.start_index|add:"-1" }}</td> 
-                <td>{{ vendor.name }}</td>
+                <td>
+                    <a href="{% url 'user:vendor_detail' vendor.id %}" class="text-decoration-none" style="color: inherit;">
+                        {{ vendor.name }}
+                    </a>
+                </td>                
                 <td>{{ vendor.email }}</td>
                 <td>{{ vendor.address }}</td>
                 <td>{{ vendor.phone }}</td>
                 <td>{{ vendor.created_at|localtime }}</td> 
                 <td>{{ vendor.updated_at|localtime }}</td> 
                 <td>
-                    <a href="{% url 'user:vendor_detail' vendor.id %}" class="btn btn-primary btn-sm">
-                        <i class="fa fa-eye"></i>
-                    </a>
-
                     <a href="{% url 'user:edit_vendor' vendor.id %}" class="btn btn-warning btn-sm">
                         <i class="fa fa-edit"></i>
                     </a>

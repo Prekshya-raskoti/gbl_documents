@@ -44,15 +44,12 @@ class ContractCreateView(CreateView):
             )
 
             if active_contract:
-                # If an active contract exists, replace it with the new one
                 active_contract.is_active = False
                 active_contract.save()
                 messages.info(self.request, "An active contract was found and has been replaced with the new one.")
         except Contract.DoesNotExist:
-            # No active contract found, proceed with the new contract
             pass
 
-        # Set additional fields before saving
         form.instance.expiry_date = expiry_date
         form.instance.created_by = self.request.user
         messages.success(self.request, "Contract created successfully!")  
@@ -64,8 +61,8 @@ class ContractCreateView(CreateView):
         today = now().date()
         next_month = today + timedelta(days=30)
         context["expiring_contracts"] = Contract.objects.filter(
-            expiry_date__gte=today,  # Expiry date is today or later
-            expiry_date__lte=next_month  # Expiry date is within the next 30 days
+            expiry_date__gte=today,  
+            expiry_date__lte=next_month  
         )
         return context
 
@@ -106,7 +103,6 @@ class VendorContractManageView(TemplateView):
             ),
             pk=contract_pk
         )        
-
 
         context['vendor'] = contract.vendor
         context['contract'] = contract
@@ -150,10 +146,8 @@ class VendorContractManageView(TemplateView):
             else:
                 messages.error(request, "Failed to update contract.")
 
-
-        # Handle file upload for existing contract
         elif action == "add_files" and contract_pk:
-            # contract = get_object_or_404(Contract, id=contract_pk, vendor=vendor)
+          
             files = request.FILES.getlist("files")
 
             if files:
@@ -246,5 +240,7 @@ def check_active_contract(request):
             vendor_id=vendor_id,
             is_active=True,
         ).exists()
+
+    print(has_active)
 
     return JsonResponse({'has_active_contract': has_active})

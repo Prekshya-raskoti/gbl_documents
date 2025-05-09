@@ -2,7 +2,11 @@
     {% with vendor=item.vendor expiring_soon=item.expiring_soon contract=item.contract %}
         <tr>
             <td>{{ forloop.counter }}</td>
-            <td>{{ vendor.name }}</td>
+            <td>
+                <a href="{% url 'user:vendor_detail' vendor.id %}" class="text-decoration-none">
+                    {{ vendor.name }}
+                </a>
+            </td>
             <td>{{ vendor.email }}</td>
             <td>{{ vendor.address }}</td>
             <td>{{ vendor.phone }}</td>

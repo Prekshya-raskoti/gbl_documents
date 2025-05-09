@@ -11,9 +11,6 @@ class AuthMiddleware:
             '/api/',
             '/media/',
             '/static/',
-            '/password_reset_view/',
-            '/email_verify/',
-            '/change_password/',
             '/favicon.ico',
         ]
     
