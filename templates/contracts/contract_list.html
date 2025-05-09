@@ -59,7 +59,7 @@
             </a>
         
             <a href="{% url 'contracts:contract_inactive' %}" 
-               class="btn {% if request.resolver_match.url_name == 'contract_inactive' %}btn-warning{% else %}btn-outline-warning btn-muted{% endif %}">
+               class="btn {% if request.resolver_match.url_name == 'contract_inactive' %}btn-secondary{% else %}btn-outline-secondary btn-muted{% endif %}">
                 Inactive Contracts
             </a>
         
@@ -180,6 +180,13 @@ document.addEventListener('DOMContentLoaded', function () {
     border: 1px solid #ced4da;
     border-radius: 0.375rem;
 }
+#notification-dropdown a {
+    text-decoration: none;
+    color: black;
+}
+
+
+
 
 </style>
 {% endblock %}
