@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import DocumentListView, DocumentCreateView, DocumentDeleteView, VendorDocumentManageView, VendorDocumentDeleteView
+from .views import DocumentListView, DocumentCreateView, DocumentDeleteView, VendorDocumentManageView, VendorDocumentDeleteView, CheckDocumentExistsView
 
 app_name = 'documents'
 
@@ -9,7 +9,5 @@ urlpatterns = [
     path('delete/<int:pk>/', DocumentDeleteView.as_view(), name='document_delete'),
     path('<int:pk>/manage/', VendorDocumentManageView.as_view(), name='vendor_document_manage'),
     path('vendor/<int:pk>/delete-documents/', VendorDocumentDeleteView.as_view(), name='vendor_document_delete'),
-
-
-
+    path('check-document-exists/', CheckDocumentExistsView.as_view(), name='check_document_exists'),
 ]
