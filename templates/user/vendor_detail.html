@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load tz %}
 {% block title %}Vendor Profile{% endblock title %}
-
 {% block content %}
 
 <div class="container-fluid mt-4">
@@ -11,24 +10,25 @@
             <i class="fa fa-angle-left"></i> Back
         </a>
     </div>
+    <hr>
+    <br>
 
     {# Custom Tabs Navigation with button styling #}
-    <div class="mb-4">
-        <div class="d-flex" role="tablist" id="vendorTabs">
-            <button type="button" class="btn btn-primary px-4 me-2 active" id="info-tab" data-bs-toggle="tab"
-                data-bs-target="#info" role="tab" aria-controls="info" aria-selected="true">
-                Information
-            </button>
-            <button type="button" class="btn btn-primary px-4 me-2" id="documents-tab" data-bs-toggle="tab"
-                data-bs-target="#documents" role="tab" aria-controls="documents" aria-selected="false">
-                Documents
-            </button>
-            <button type="button" class="btn btn-primary px-4" id="contracts-tab" data-bs-toggle="tab"
-                data-bs-target="#contracts" role="tab" aria-controls="contracts" aria-selected="false">
-                Contracts
-            </button>
-        </div>
+    <div class="d-flex" role="tablist" id="vendorTabs">
+        <button type="button" class="btn btn-outline-primary px-4 me-2 active" id="info-tab" data-bs-toggle="tab"
+            data-bs-target="#info" role="tab" aria-controls="info" aria-selected="true">
+            Information
+        </button>
+        <button type="button" class="btn btn-outline-primary px-4 me-2" id="documents-tab" data-bs-toggle="tab"
+            data-bs-target="#documents" role="tab" aria-controls="documents" aria-selected="false">
+            Documents
+        </button>
+        <button type="button" class="btn btn-outline-primary px-4" id="contracts-tab" data-bs-toggle="tab"
+            data-bs-target="#contracts" role="tab" aria-controls="contracts" aria-selected="false">
+            Contracts
+        </button>
     </div>
+    <br>
 
     {# Tabs Content #}
     <div class="tab-content" id="vendorTabsContent">
@@ -49,11 +49,10 @@
                     </ul>
                 </div>
             </div>
-
         </div>
 
         {# Documents Tab #}
-        <div class="tab-pane" id="documents" role="tabpanel" aria-labelledby="documents-tab">
+        <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
             <div class="card">
                 <div class="card-header d-flex gap-5">
                     <h5 class="mb-0">Documents</h5>
@@ -84,7 +83,7 @@
         </div>
 
         {# Contracts Tab #}
-        <div class="tab-pane" id="contracts" role="tabpanel" aria-labelledby="contracts-tab">
+        <div class="tab-pane fade" id="contracts" role="tabpanel" aria-labelledby="contracts-tab">
             <div class="card">
                 <div class="card-header d-flex gap-5 ">
                     <h5 class="mb-0">Contracts</h5>
@@ -125,35 +124,33 @@
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Initialize Bootstrap tabs
         const tabTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'));
         const tabList = tabTriggerList.map(function (tabTriggerEl) {
             return new bootstrap.Tab(tabTriggerEl);
         });
 
-        // Set initial button states (info tab is active by default)
-        updateTabButtonStyles();
+        const tabs = new bootstrap.Tab(document.querySelector('#info-tab')); 
+        tabs.show(); 
 
-        // Handle button styling when tabs are clicked
         tabTriggerList.forEach(tabTriggerEl => {
-            tabTriggerEl.addEventListener('shown.bs.tab', function (event) {
+            tabTriggerEl.addEventListener('shown.bs.tab', function () {
                 updateTabButtonStyles();
             });
         });
 
-        // Function to update button styles based on aria-selected state
         function updateTabButtonStyles() {
             tabTriggerList.forEach(el => {
-                el.classList.remove('btn-primary', 'btn-tab-active');
+                el.classList.remove('btn-primary', 'btn-outline-primary');
                 if (el.getAttribute('aria-selected') === 'true') {
-                    el.classList.add('btn-tab-active');
-                } else {
                     el.classList.add('btn-primary');
+                } else {
+                    el.classList.add('btn-outline-primary');
                 }
             });
         }
