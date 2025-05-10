@@ -60,16 +60,14 @@
             Inactive Contracts
         </a>
         <form method="get" class="d-flex align-items-center" style="gap:10px;">
-            <div style="width: 250px;">
-                <select class="select2-vendor form-control" id="vendor_search" name="q">
-                    <option value="">Select a vendor</option>
+            <select class="select2-vendor form-control" id="vendor_search" name="q" style="width: 250px;">
+                <option value=""></option>
                     {% for contract in contracts %}
                         <option value="{{ contract.vendor.name }}" {% if request.GET.q == contract.vendor.name %}selected{% endif %}>
                             {{ contract.vendor.name }}
                         </option>
                     {% endfor %}
                 </select>
-            </div>
             <button type="submit" class="btn btn-outline-secondary">
                 <i class="fa fa-filter"></i>
             </button>
@@ -148,13 +146,4 @@
     }); 
 
     </script>
-    <style>
-        .select2-container--default .select2-selection--single {
-            height: 38px;
-            padding: 6px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 0.375rem;
-        }
-        
-    </style>
 {% endblock %}
