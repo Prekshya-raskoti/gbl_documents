@@ -157,6 +157,12 @@ body {
   }
 
 /* base.html */
+.nav-link.active {
+    background-color: #dc3545;
+    color: white !important;
+    border-radius: 5px;
+    margin-top: 15px;
+}
 .profile-circle {
   width: 40px;
   height: 40px;
