@@ -7,6 +7,7 @@ from .views import (
     ExpiringContractsListView,
     InactiveContractsListView,
     check_active_contract,
+    SecureContractFileView,
 )
 
 app_name = 'contracts'  
@@ -18,5 +19,5 @@ urlpatterns = [
     path("expiring/", ExpiringContractsListView.as_view(), name="contract_expire"),
     path("inactive/", InactiveContractsListView.as_view(), name="contract_inactive"),
     path('check-active-contract/', check_active_contract, name='check_active_contract'),
-
+    path('contract-file/<int:file_id>/view/', SecureContractFileView.as_view(), name='secure_contract_file_view'),
 ]
