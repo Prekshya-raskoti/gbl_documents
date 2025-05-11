@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% block title %}Manage Vendor Contract{% endblock title %}
+
 
 {% block content %}
 <div class="container-fluid">
@@ -43,7 +45,7 @@
                                             <!-- File name and View button -->
                                             <div class="me-auto d-flex align-items-center">
                                                 <div style="width: 400px;">{{ file.file.name }}</div>
-                                                <a href="{{ file.file.url }}" class="btn btn-sm btn-outline-primary ms-4" target="_blank">
+                                                <a href="{% url 'contracts:secure_contract_file_view' file.id %}" class="btn btn-sm btn-outline-primary ms-4" target="_blank">
                                                     <i class="fa fa-eye"></i> View
                                                 </a>
                                             </div>
