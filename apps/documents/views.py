@@ -7,7 +7,9 @@ from apps.user.models import Vendor
 from .models import Document
 from .forms import DocumentForm
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
+import os
 
 
 class DocumentListView(ListView):
@@ -163,4 +165,30 @@ class CheckDocumentExistsView(View):
             document_type=document_type
         ).exists()
         
-        return JsonResponse({'exists': exists}) 
+        return JsonResponse({'exists': exists})
+
+class SecureDocumentView(LoginRequiredMixin, View):
+    def get(self, request, document_id):
+        document = get_object_or_404(Document, id=document_id)
+        
+        if not os.path.exists(document.file.path):
+            messages.error(request, "File not found.")
+            return redirect('documents:document_list')
+            
+        file = open(document.file.path, 'rb')
+        response = FileResponse(file, as_attachment=False)
+        
+        ext = os.path.splitext(document.file.name)[1].lower()
+        content_types = {
+            '.pdf': 'application/pdf',
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.png': 'image/png',
+            '.doc': 'application/msword',
+            '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        }
+        response['Content-Type'] = content_types.get(ext, 'application/octet-stream')
+        response['Content-Disposition'] = 'inline'  # Remove filename to prevent size display
+        response['Cache-Control'] = 'no-transform'
+        
+        return response 

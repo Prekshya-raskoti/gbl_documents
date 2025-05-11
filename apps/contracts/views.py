@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.utils.timezone import now
 from datetime import timedelta
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.views.decorators.http import require_GET
 from django.utils import timezone
 from django.db.models import Prefetch
@@ -13,6 +13,9 @@ from apps.user.models import Vendor
 from .models import Contract, ContractFile
 from .forms import ContractForm
 from django.db.models import Q
+from django.contrib.auth.mixins import LoginRequiredMixin
+import os
+
 class ContractCreateView(CreateView):
     model = Contract
     form_class = ContractForm
@@ -244,3 +247,29 @@ def check_active_contract(request):
     print(has_active)
 
     return JsonResponse({'has_active_contract': has_active})
+
+class SecureContractFileView(LoginRequiredMixin, View):
+    def get(self, request, file_id):
+        contract_file = get_object_or_404(ContractFile, id=file_id)
+        
+        if not os.path.exists(contract_file.file.path):
+            messages.error(request, "File not found.")
+            return redirect('contracts:contract_list')
+            
+        file = open(contract_file.file.path, 'rb')
+        response = FileResponse(file, as_attachment=False)
+        
+        ext = os.path.splitext(contract_file.file.name)[1].lower()
+        content_types = {
+            '.pdf': 'application/pdf',
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.png': 'image/png',
+            '.doc': 'application/msword',
+            '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        }
+        response['Content-Type'] = content_types.get(ext, 'application/octet-stream')
+        response['Content-Disposition'] = 'inline'
+        response['Cache-Control'] = 'no-transform'
+        
+        return response
