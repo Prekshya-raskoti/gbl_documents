@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% block title %}Manage Vendor Documents{% endblock title %}
 
 {% block content %}
 <div class="container-fluid">
@@ -140,26 +141,44 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const existingDocTypes = new Set();
-        
-        // Collect document types already used in existing documents
+
+        // Collect existing document types
         document.querySelectorAll('.list-group-item select[name="document_type"]').forEach(select => {
             existingDocTypes.add(select.value);
         });
 
-        // Hook into the "Add New Document" dropdown
+        // Hook into the Add New Document dropdown
         const newDocTypeSelect = document.querySelector('form:not([class]) select[name="document_type"]');
-        
+
         if (newDocTypeSelect) {
             newDocTypeSelect.addEventListener("change", function () {
+                // Remove previous error if exists
+                const existingError = document.querySelector("#docTypeError");
+                if (existingError) {
+                    existingError.remove();
+                    this.classList.remove("is-invalid");
+                }
+
                 const selectedType = this.value;
 
                 if (existingDocTypes.has(selectedType)) {
-                    alert("This document type has already been added. Please choose another.");
+                    this.classList.add("is-invalid");
+
+                    // Create error message
+                    const error = document.createElement("div");
+                    error.id = "docTypeError";
+                    error.className = "invalid-feedback d-block";
+                    error.innerText = "This document type has already been added. Please choose another.";
+
+                    // Insert it right after the select field
+                    this.parentElement.appendChild(error);
+
                     this.value = ""; // Reset selection
                 }
             });
         }
     });
 </script>
+
 
 {% endblock %}

@@ -3,7 +3,7 @@ from .models import Contract, ContractFile
 
 class ContractForm(forms.ModelForm):
     files = forms.CharField(
-        widget=forms.HiddenInput(),  # This will store file paths as a hidden input
+        widget=forms.HiddenInput(),
         required=False,
     )
     
