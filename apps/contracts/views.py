@@ -183,13 +183,24 @@ class ExpiringContractsListView(ListView):
     def get_queryset(self):
         today = now().date()
         next_month = today + timedelta(days=30)
-        return Contract.objects.filter(
+        qs = Contract.objects.filter(
             is_active=True,
-            expiry_date__gte=today,  
-            expiry_date__lte=next_month  
+            expiry_date__gte=today,
+            expiry_date__lte=next_month
         ).order_by("expiry_date")
-    
 
+        q = self.request.GET.get("q")
+        if q:
+            qs = qs.filter(vendor__name__icontains=q)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        expiring_contracts = self.get_queryset()
+        context['contracts'] = expiring_contracts.select_related('vendor')
+        return context
+
+    
 class InactiveContractsListView(ListView):
     model = Contract
     template_name = "contracts/inactive_contracts.html"
@@ -197,18 +208,25 @@ class InactiveContractsListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Contract.objects.filter(
-           is_active=False,
-        ).order_by("vendor__name")
+        queryset = Contract.objects.filter(is_active=False).order_by("vendor__name")
+        vendor_name = self.request.GET.get("q")
+
+        if vendor_name:
+            queryset = queryset.filter(vendor__name__icontains=vendor_name)
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         today = now().date()
         next_month = today + timedelta(days=30)
+
         context["expiring_contracts"] = Contract.objects.filter(
-            is_active=True,
-            expiry_date__range=(today, next_month)
+        is_active=True,
+        expiry_date__range=(today, next_month)
         )
+        context["contracts"] = self.get_queryset()  # Add this line
+
         return context
 
 

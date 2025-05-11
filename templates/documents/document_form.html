@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}Add Vendor Documents{% endblock title %}
 
 {% block content %}
 
@@ -53,7 +56,6 @@
 
 <script>
     $(document).ready(function () {
-        // Initialize select2 for vendor field
         $('.select2').select2({
             placeholder: "Select a vendor",
             allowClear: true,
@@ -78,7 +80,6 @@
                         if (response.exists) {
                             errorDiv.show();
                             $('#id_document_type').addClass('is-invalid');
-                            // $('#id_document_type').val(''); // Clear the selection
                         } else {
                             errorDiv.hide();
                             $('#id_document_type').removeClass('is-invalid');
@@ -101,14 +102,5 @@
         $('#id_document_type').on('change', checkDocumentExists);
     });
 </script>
-
-<style>
-    .select2-container--default .select2-selection--single {
-        height: 38px;
-        padding: 6px 12px;
-        border: 1px solid #ced4da;
-        border-radius: 0.375rem;
-    }
-</style>
 
 {% endblock content %}

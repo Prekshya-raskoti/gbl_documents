@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 {% load tz %}
+{% load static %}
+
+{% block title %}Expiring Contracts{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -42,25 +45,42 @@
 
     <hr>
 
-    <div class="mb-3 gap-3 d-flex w-100">
-        <a href="{% url 'contracts:contract_list' %}" class="btn btn-success">
+    <div class="mb-3 gap-2 d-flex w-100">
+        <a href="{% url 'contracts:contract_list' %}" 
+           class="btn {% if request.resolver_match.url_name == 'contract_list' %}btn-success{% else %}btn-outline-success btn-muted{% endif %}">
             Active Contracts
         </a>
     
-        <a href="{% url 'contracts:contract_expire' %}" class="btn btn-danger">
+        <a href="{% url 'contracts:contract_expire' %}" 
+           class="btn {% if request.resolver_match.url_name == 'contract_expire' %}btn-danger{% else %}btn-outline-danger btn-muted{% endif %}">
             Expiring Contracts
         </a>
     
-        <a href="{% url 'contracts:contract_inactive' %}" class="btn btn-warning">
+        <a href="{% url 'contracts:contract_inactive' %}" 
+           class="btn {% if request.resolver_match.url_name == 'contract_inactive' %}btn-secondary{% else %}btn-outline-secondary btn-muted{% endif %}">
             Inactive Contracts
         </a>
+        <form method="get" class="d-flex align-items-center" style="gap:10px;">
+            <select class="select2-vendor form-control" id="vendor_search" name="q" style="width: 250px;">
+                <option value=""></option>
+                    {% for contract in contracts %}
+                        <option value="{{ contract.vendor.name }}" {% if request.GET.q == contract.vendor.name %}selected{% endif %}>
+                            {{ contract.vendor.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            <button type="submit" class="btn btn-outline-secondary">
+                <i class="fa fa-filter"></i>
+            </button>
+        </form>
+
     
     </div>
 
     <div class="table">
         {% if expiring_contracts %}
-            <table class="table table">
-                <thead>
+        <table class="table table-hover mb-0 align-middle">
+            <thead>
                     <tr>
                         <th>S.N.</th>
                         <th>Vendor</th>
@@ -102,9 +122,8 @@
 </div>
 {% include 'pagination.html' %}
 
-{% endblock %}
-
-{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const bellIcon = document.getElementById('bell-icon');
@@ -125,6 +144,11 @@
                 dropdown.style.display = 'none';
             }
         });
+
+    $('#vendor_search').select2({
+        placeholder: 'Select a vendor',
+        allowClear: true
     });
-    </script>
+}); 
+</script>
 {% endblock %}

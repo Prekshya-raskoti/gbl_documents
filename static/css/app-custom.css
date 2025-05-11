@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,800,700,600);
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800');
 
 html,
 body {
@@ -10,97 +10,76 @@ body {
   color: #4f5f6f;
   overflow-x: hidden; }
 
-  .nav-link.active {
-    background-color: #dc3545;
-    color: white !important;
-    border-radius: 5px;
-    margin-top: 15px;
-}
-
-.d-flex-gap {
-  gap: 10px;
-}
-.modal-dialog {
-  max-width: 400px;
-  margin-top: -250px;
-}
-
-.modal-content {
-  border-radius: 8px;
-}
-
-.modal-header {
-  background-color: rgb(48, 47, 47);
-  color: #fff;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.modal-title {
-  font-weight: bold;
-  font-size: 1.25rem;
-}
-
-.modal-body {
-  font-size: 1rem;
-  font-weight: bolder;
-  color: #495057;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: center;
-}
-
-.btn-close {
-  background: none;
-  border: none;
-}
-
-.btn-danger {
-  background-color: #dc3545;
-  border-color: #dc3545;
-}
-
-.btn-secondary {
-  background-color: #6c757d;
-  border-color: #6c757d;
-}
-
-.btn-danger:hover {
-  background-color: #c82333;
-  border-color: #bd2130;
-}
-
-.btn-secondary:hover {
-  background-color: #5a6268;
-  border-color: #545b62;
-}
-.user-profile-section{
-  margin-top: 25px;
-}
-
-.formFooter {
-  margin-top: 5px;
-}
+/* login */
+/* Main login container */
 .auth {
-  background-color: #f5f5f5;
+  background-color: #EF6359;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Centering and styling the card */
+.auth-container {
+  width: 450px;
+  min-height: 330px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  user-select: none;
+}
+
+.card {
+  border-radius: 15px;
+}
+
+.auth-header {
+  text-align: center;
+  border-bottom: 1px solid #EF6359;
+}
+
+.auth-title {
+  color: #97A4B1;
+  padding: 20px;
+  line-height: 30px;
+  font-size: 26px;
+  font-weight: 600;
+  margin: 0;
 }
 
 .span-red {
-  color: #dc3545;
+  color: #EF6359;
+  font-weight: 900;
+  font-size: large;
 }
 
 .span-blue {
-  color: #007bff;
+  color: #25A4ED;
+  font-weight: 900;
+  font-size: large;
 }
 
+/* Form styling */
 .auth-content {
-  padding: 30px;
+  padding: 30px 50px;
+  min-height: 260px;
+}
+
+.form-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.auth .control-label {
+  font-weight: bold;
+  margin-bottom: 8px;
 }
 
 .auth .form-control.underlined {
@@ -115,15 +94,16 @@ body {
   box-shadow: none;
 }
 
-.auth .control-label {
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
+/* Checkbox */
 .auth .checkbox {
   margin-right: 8px;
 }
 
+.auth .checkbox span {
+  color: #4f5f6f;
+}
+
+/* Submit button */
 .auth .btn-primary {
   background-color: #dc3545;
   border-color: #dc3545;
@@ -132,6 +112,24 @@ body {
   font-weight: 500;
 }
 
+.auth .btn-primary:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+/* Footer */
+.formFooter {
+  background-color: #f6f6f6;
+  border-top: 1px solid #dce8f1;
+  padding: 25px;
+  text-align: center;
+  border-radius: 0 0 10px 10px;
+  margin-top: 5px;
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Facebook icon */
 .btn-social-icon {
   width: 50px;
   height: 50px;
@@ -139,12 +137,32 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
-  text-decoration: none;
   font-size: 50px;
+  text-decoration: none;
   margin-top: -60px;
+  margin-bottom: 10px;
 }
 
+/* Error message */
+#login-error-message {
+  transition: opacity 0.5s;
+}
+
+/* select2 style */
+ .select2-container--default .select2-selection--single {
+        height: 38px;
+        padding: 6px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+  }
+
+/* base.html */
+.nav-link.active {
+    background-color: #dc3545;
+    color: white !important;
+    border-radius: 5px;
+    margin-top: 15px;
+}
 .profile-circle {
   width: 40px;
   height: 40px;
@@ -187,124 +205,4 @@ body {
 .main-content {
   margin-left: 260px;
 }
-div.card{
-  border-radius: 15px;
-}
 
-.alert {
-  transition: opacity 0.5s;
-}  
-
-.custom-footer{
-  font-size: 12px;
-  font-weight: normal;
-  font-style: italic;
-}
-
-
-
-#ref .color-primary {
-  color: #EF6359; }
-
-#ref .chart .color-primary {
-  color: #EF6359; }
-
-#ref .chart .color-secondary {
-  color: #9ed85f; }
-
-.span-red{
-  color: #EF6359;
-  font-weight: 900;
-  font-size: large;
-}
-.span-blue{
-  font-size: large;
-  font-weight: 900;
-  color: #25A4ED;
-}
-
-.formFooter {
-  background-color: #f6f6f6;
-  border-top: 1px solid #dce8f1;
-  padding: 25px;
-  text-align: center;
-  -webkit-border-radius: 0 0 10px 10px;
-  border-radius: 0 0 10px 10px;
-}
-.auth {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  background-color: #EF6359;
-  overflow-x: hidden;
-  overflow-y: auto; 
-}
-
-.auth-container {
-  user-select: none;
-  width: 450px;
-  min-height: 330px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translateY(-50%) translateX(-50%);
-          transform: translateY(-50%) translateX(-50%); }
-  .auth-container .auth-header {
-    text-align: center;
-    border-bottom: 1px solid #EF6359; }
-  .auth-container .auth-title {
-    color: #97A4B1;
-    padding: 20px;
-    line-height: 30px;
-    font-size: 26px;
-    font-weight: 600;
-    margin: 0; 
-  }
-
-  .auth-container .auth-content {
-    padding: 30px 50px;
-    min-height: 260px;
-   }
-
-  .auth-container .forgot-btn {
-    line-height: 28px;
-   }
-
-  .auth-container .checkbox label {
-    padding: 0; 
-  }
-  .auth-container .checkbox a {
-    vertical-align: text-top; 
-  }
-  .auth-container .checkbox span {
-    color: #4f5f6f; 
-  }
-
-.remove-btn {
-    background-color: transparent;
-    border: none;
-    color: #dc3545; 
-    font-size: 1rem; 
-    cursor: pointer;
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    padding: 5px;
-}
-
-.remove-btn:hover {
-    color: #ffffff;
-}
-
-.form-group {
-    position: relative;
-}
-
-.additional-file-field {
-    margin-bottom: 1.5rem; 
-}
-
-.form-group input[type="file"] {
-    margin-top: 10px;
-}
