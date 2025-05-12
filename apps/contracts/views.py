@@ -257,7 +257,7 @@ class SecureContractFileView(LoginRequiredMixin, View):
             return redirect('contracts:contract_list')
             
         file = open(contract_file.file.path, 'rb')
-        response = FileResponse(file, as_attachment=False)
+        response = FileResponse(file, as_attachment=False) #display the file in the browser
         
         ext = os.path.splitext(contract_file.file.name)[1].lower()
         content_types = {
@@ -269,7 +269,7 @@ class SecureContractFileView(LoginRequiredMixin, View):
             '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         }
         response['Content-Type'] = content_types.get(ext, 'application/octet-stream')
-        response['Content-Disposition'] = 'inline'
-        response['Cache-Control'] = 'no-transform'
+        response['Content-Disposition'] = 'inline' #display file in the browser window
+        response['Cache-Control'] = 'no-transform' #prevents  modifying the file content
         
         return response
