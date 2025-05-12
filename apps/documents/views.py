@@ -186,6 +186,8 @@ class SecureDocumentView(LoginRequiredMixin, View):
             '.png': 'image/png',
             '.doc': 'application/msword',
             '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            '.webp': 'image/webp',  # Added support for webp
+
         }
         response['Content-Type'] = content_types.get(ext, 'application/octet-stream')
         response['Content-Disposition'] = 'inline'  # Remove filename to prevent size display
