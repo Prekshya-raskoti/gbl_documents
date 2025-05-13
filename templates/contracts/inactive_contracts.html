@@ -27,7 +27,7 @@
                     <button type="button" id="close-dropdown" class="btn btn-sm" style="font-size: 14px;" aria-label="Close">
                         <i class="fa fa-times"></i>
                     </button>
-                                    </div>
+            </div>
                 {% if expiring_contracts %}
                     <ul class="list-group list-group-flush">
                         {% for contract in expiring_contracts %}
@@ -62,12 +62,12 @@
         <form method="get" class="d-flex align-items-center" style="gap:10px;">
             <select class="select2-vendor form-control" id="vendor_search" name="q" style="width: 250px;">
                 <option value=""></option>
-                    {% for contract in contracts %}
-                        <option value="{{ contract.vendor.name }}" {% if request.GET.q == contract.vendor.name %}selected{% endif %}>
-                            {{ contract.vendor.name }}
-                        </option>
-                    {% endfor %}
-                </select>
+                {% for vendor in unique_vendors %}
+                    <option value="{{ vendor.name }}" {% if request.GET.q == vendor.name %}selected{% endif %}>
+                        {{ vendor.name }}
+                    </option>
+                {% endfor %}
+            </select>
             <button type="submit" class="btn btn-outline-secondary">
                 <i class="fa fa-filter"></i>
             </button>
