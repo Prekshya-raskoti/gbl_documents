@@ -224,7 +224,7 @@ class InactiveContractsListView(ListView):
         today = now().date()
         next_month = today + timedelta(days=30)
 
-        # Add unique vendors to the context
+        # Add unique vendors to the context 
         context["unique_vendors"] = Vendor.objects.filter(
             contracts__is_active=False
         ).distinct().order_by("name")
@@ -236,18 +236,6 @@ class InactiveContractsListView(ListView):
         context["contracts"] = self.get_queryset()
 
         return context
-        context = super().get_context_data(**kwargs)
-        today = now().date()
-        next_month = today + timedelta(days=30)
-
-        context["expiring_contracts"] = Contract.objects.filter(
-        is_active=True,
-        expiry_date__range=(today, next_month)
-        )
-        context["contracts"] = self.get_queryset()  # Add this line
-
-        return context
-
 
 @require_GET
 def check_active_contract(request):
