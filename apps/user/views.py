@@ -16,8 +16,8 @@ from django.views.generic import (
 )
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import CreateAPIView
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework.response import Response
+
 
 from .forms import VendorForm
 from .models import Vendor
@@ -221,11 +221,27 @@ class VendorCreateView(CreateAPIView):
     serializer_class = VendorSerializer
     permission_classes = [IsAuthenticated]
 
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        return Response({
+            "message": "Vendor has been successfully created!",
+            "data": response.data
+        }, status=response.status_code)
+
 class VendorCreateFormView(CreateView):
     model = Vendor
     form_class = VendorForm
     template_name = "user/vendor_form.html"
-    success_url = reverse_lazy('user:user_vendor_list')   
+    success_url = reverse_lazy('user:user_vendor_list')  
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Vendor has been successfully created!")
+        return response
+
+    def form_invalid(self, form):
+        messages.error(self.request, "There was an error with the form submission.")
+        return super().form_invalid(form)   
      
 class VendorUpdateView(UpdateView):
     model = Vendor
