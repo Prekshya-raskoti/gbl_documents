@@ -14,11 +14,15 @@ from django.views import View
 from django.views.generic import (
     ListView, CreateView, DeleteView, UpdateView, DetailView
 )
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import CreateAPIView
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 from .forms import VendorForm
 from .models import Vendor
 from apps.contracts.models import Contract
-
+from .serializers import VendorSerializer
 class DashboardView(ListView):
     template_name = 'dashboard.html'
     context_object_name = 'recent_vendors'
@@ -211,22 +215,18 @@ class VendorListView(ListView):
         context = super().get_context_data(**kwargs)
         context['all_vendors'] = Vendor.objects.all().order_by('name')
         return context
-    
-class VendorCreateView(CreateView):
+
+class VendorCreateView(CreateAPIView):
+    queryset = Vendor.objects.all()
+    serializer_class = VendorSerializer
+    permission_classes = [IsAuthenticated]
+
+class VendorCreateFormView(CreateView):
     model = Vendor
-    form_class = VendorForm  
-    template_name = 'user/vendor_form.html'
-    success_url = reverse_lazy('user:user_vendor_list')  
-
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        messages.success(self.request, "Vendor has been successfully created!")
-        return response
-
-    def form_invalid(self, form):
-        messages.error(self.request, "There was an error with the form submission.")
-        return super().form_invalid(form)   
-
+    form_class = VendorForm
+    template_name = "user/vendor_form.html"
+    success_url = reverse_lazy('user:user_vendor_list')   
+     
 class VendorUpdateView(UpdateView):
     model = Vendor
     fields = ['name', 'email', 'address', 'phone']
