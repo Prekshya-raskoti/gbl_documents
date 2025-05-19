@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'apps.user',
     'crispy_forms',
     'crispy_bootstrap5',
+    'rest_framework',
+    'rest_framework_simplejwt',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'  
@@ -153,3 +155,12 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'  
 LOGOUT_URL = '/logout/'  
 LOGOUT_REDIRECT_URL = '/login/'  
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
